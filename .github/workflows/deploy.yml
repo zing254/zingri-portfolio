@@ -1,14 +1,18 @@
-name: Build and Deploy
+name: Build and Deploy to GitHub Pages
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,31 +29,35 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NITE_SITE_URL || 'https://zing254.github.io' }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: nextjs-output
-          path: |
-            out/
-            .next/
+          name: static-site
+          path: out/
           retention-days: 1
 
-  deploy-gh-pages:
-    needs: build-and-deploy
+  deploy:
+    needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: nextjs-output
+          name: static-site
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload to Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./out
-          publish_branch: gh-pages
+        id: deployment
+        uses: actions/deploy-pages@v4
