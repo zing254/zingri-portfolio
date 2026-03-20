@@ -41,7 +41,6 @@ const sizeStyles = {
 export default function NeonButton({
   children,
   onClick,
-  href,
   variant = 'primary',
   size = 'md',
   magnetic = true,
@@ -90,6 +89,8 @@ export default function NeonButton({
         fontSize,
         color: textColor,
         background,
+        x: springX,
+        y: springY,
       }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => !disabled && setIsHovered(true)}
@@ -97,12 +98,10 @@ export default function NeonButton({
       onMouseDown={() => !disabled && setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
       onClick={disabled ? undefined : onClick}
+      whileTap={disabled ? {} : { scale: 0.97 }}
       animate={{
-        x: springX,
-        y: springY,
         scale: isPressed ? 0.95 : isHovered ? 1.05 : 1,
       }}
-      whileTap={disabled ? {} : { scale: 0.97 }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
     >
       {/* Glow layer */}
@@ -118,39 +117,18 @@ export default function NeonButton({
       {/* Shimmer effect */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
-        animate={{
-          x: isHovered ? ['-100%', '100%'] : '-100%',
-        }}
+        initial={{ x: '-100%', skewX: '-20deg' }}
+        whileHover={{ x: '100%' }}
+        transition={{ duration: 0.6, ease: 'easeInOut' }}
         style={{
           background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
-          width: '50%',
-        }}
-        transition={{ duration: 0.5, repeat: isHovered ? Infinity : 0, repeatDelay: 0.5 }}
-      />
-
-      {/* Border glow */}
-      <motion.div
-        className="absolute inset-[1px] rounded-xl pointer-events-none"
-        animate={{
-          opacity: isHovered ? 1 : 0,
-          boxShadow: isHovered ? `inset 0 0 20px rgba(255,255,255,0.1)` : 'none',
         }}
       />
 
       {/* Content */}
-      <span className="relative z-10 flex items-center gap-2">
-        {children}
-      </span>
+      <span className="relative z-10">{children}</span>
     </motion.div>
   );
-
-  if (href) {
-    return (
-      <a href={href} target="_blank" rel="noopener noreferrer">
-        {buttonContent}
-      </a>
-    );
-  }
 
   return buttonContent;
 }
