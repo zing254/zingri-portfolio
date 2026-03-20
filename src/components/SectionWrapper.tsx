@@ -12,14 +12,6 @@ interface SectionWrapperProps {
   once?: boolean;
 }
 
-const directionMap = {
-  up: { y: distance => -distance },
-  down: { y: distance => distance },
-  left: { x: distance => -distance },
-  right: { x: distance => distance },
-  none: {},
-};
-
 export default function SectionWrapper({
   children,
   className = '',
@@ -40,16 +32,29 @@ export default function SectionWrapper({
 
   const getInitial = () => {
     if (direction === 'none') return { opacity: 0 };
-    const dir = directionMap[direction];
-    const initial: { opacity?: number; y?: number; x?: number } = { opacity: 0 };
-    if (dir.y) initial.y = dir.y(distance);
-    if (dir.x) initial.x = dir.x(distance);
-    return initial;
+    const opacity = 0;
+    let y = 0;
+    let x = 0;
+    switch (direction) {
+      case 'up':
+        y = -distance;
+        break;
+      case 'down':
+        y = distance;
+        break;
+      case 'left':
+        x = -distance;
+        break;
+      case 'right':
+        x = distance;
+        break;
+    }
+    return { opacity, x, y };
   };
 
   const getAnimate = () => {
     if (direction === 'none') return { opacity: 1 };
-    return { opacity: 1, y: 0, x: 0 };
+    return { opacity: 1, x: 0, y: 0 };
   };
 
   return (
@@ -61,7 +66,7 @@ export default function SectionWrapper({
       transition={{
         duration: 0.7,
         delay,
-        ease: [0.215, 0.61, 0.355, 1],
+        ease: [0.215, 0.61, 0.355, 1] as const,
       }}
     >
       {children}
@@ -114,7 +119,7 @@ export function StaggerItem({ children, className = '' }: { children: ReactNode;
         visible: {
           opacity: 1,
           y: 0,
-          transition: { duration: 0.6, ease: [0.215, 0.61, 0.355, 1] },
+          transition: { duration: 0.6, ease: [0.215, 0.61, 0.355, 1] as const },
         },
       }}
     >

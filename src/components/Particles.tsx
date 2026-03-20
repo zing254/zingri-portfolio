@@ -72,16 +72,18 @@ export default function Particles() {
 
     drawGrid(ctx, width, height, mx * 0.02, my * 0.02);
 
+    const maxDist = 200;
+
     particlesRef.current.forEach((p) => {
       const dx = mx - p.x;
       const dy = my - p.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      const maxDist = 200;
 
+      let forceValue = 0;
       if (dist < maxDist) {
-        const force = (maxDist - dist) / maxDist;
-        p.vx += dx * force * 0.0003;
-        p.vy += dy * force * 0.0003;
+        forceValue = (maxDist - dist) / maxDist;
+        p.vx += dx * forceValue * 0.0003;
+        p.vy += dy * forceValue * 0.0003;
       }
 
       p.x += p.vx;
@@ -103,7 +105,7 @@ export default function Particles() {
         ctx.beginPath();
         ctx.moveTo(p.x, p.y);
         ctx.lineTo(mx, my);
-        ctx.strokeStyle = `rgba(0, 212, 255, ${force * 0.15})`;
+        ctx.strokeStyle = `rgba(0, 212, 255, ${forceValue * 0.15})`;
         ctx.lineWidth = 0.5;
         ctx.stroke();
       }
@@ -125,27 +127,29 @@ export default function Particles() {
     resize();
     window.addEventListener('resize', resize);
 
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+
     rafRef.current = requestAnimationFrame(draw);
 
     return () => {
       window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(rafRef.current);
     };
-  }, [initParticles, draw]);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    mouseX.set(e.clientX);
-    mouseY.set(e.clientY);
-  };
+  }, [mouseX, mouseY, initParticles, draw]);
 
   return (
     <motion.canvas
       ref={canvasRef}
-      className="particle-container"
-      onMouseMove={handleMouseMove}
+      className="fixed inset-0 pointer-events-none z-0"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 1.5 }}
+      transition={{ duration: 1 }}
     />
   );
 }

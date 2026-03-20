@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { ReactNode } from 'react';
 
@@ -8,7 +8,7 @@ interface PageTransitionProps {
   children: ReactNode;
 }
 
-const pageVariants = {
+const pageVariants: Variants = {
   initial: {
     opacity: 0,
     y: 20,
@@ -20,7 +20,7 @@ const pageVariants = {
     filter: 'blur(0px)',
     transition: {
       duration: 0.5,
-      ease: [0.215, 0.61, 0.355, 1],
+      ease: [0.215, 0.61, 0.355, 1] as const,
       when: 'beforeChildren',
     },
   },
@@ -30,12 +30,12 @@ const pageVariants = {
     filter: 'blur(4px)',
     transition: {
       duration: 0.3,
-      ease: [0.55, 0.055, 0.675, 0.19],
+      ease: [0.55, 0.055, 0.675, 0.19] as const,
     },
   },
 };
 
-const overlayVariants = {
+const overlayVariants: Variants = {
   initial: { opacity: 0 },
   enter: {
     opacity: 1,
@@ -51,20 +51,18 @@ export default function PageTransition({ children }: PageTransitionProps) {
   const pathname = usePathname();
 
   return (
-    <>
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={pathname}
-          variants={pageVariants}
-          initial="initial"
-          animate="enter"
-          exit="exit"
-          className="min-h-screen"
-        >
-          {children}
-        </motion.div>
-      </AnimatePresence>
-    </>
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={pathname}
+        variants={pageVariants}
+        initial="initial"
+        animate="enter"
+        exit="exit"
+        className="min-h-screen"
+      >
+        {children}
+      </motion.div>
+    </AnimatePresence>
   );
 }
 
@@ -99,12 +97,12 @@ export function SlideTransition({ children, direction = 1 }: { children: ReactNo
         animate={{
           opacity: 1,
           x: 0,
-          transition: { duration: 0.5, ease: [0.215, 0.61, 0.355, 1] },
+          transition: { duration: 0.5, ease: [0.215, 0.61, 0.355, 1] as const },
         }}
         exit={{
           opacity: 0,
           x: -100 * direction,
-          transition: { duration: 0.3, ease: [0.55, 0.055, 0.675, 0.19] },
+          transition: { duration: 0.3, ease: [0.55, 0.055, 0.675, 0.19] as const },
         }}
       >
         {children}
@@ -123,11 +121,11 @@ export function FadeTransition({ children }: { children: ReactNode }) {
         initial={{ opacity: 0 }}
         animate={{
           opacity: 1,
-          transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] },
+          transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] as const },
         }}
         exit={{
           opacity: 0,
-          transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+          transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] as const },
         }}
       >
         {children}

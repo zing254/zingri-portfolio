@@ -87,16 +87,8 @@ export default function TiltCard({
           transformStyle: 'preserve-3d',
         }}
       >
-        {/* Content layer (moves slightly less than card for depth) */}
-        <motion.div
-          className="relative z-10"
-          style={{
-            rotateX: useTransform(springY, [-0.5, 0.5], [`-${maxTilt * 0.3}deg`, `${maxTilt * 0.3}deg`]),
-            rotateY: useTransform(springX, [-0.5, 0.5], [`${maxTilt * 0.3}deg`, `-${maxTilt * 0.3}deg`]),
-          }}
-        >
-          {children}
-        </motion.div>
+        {/* Content layer */}
+        {children}
 
         {/* Reflection/shine */}
         <motion.div
@@ -110,19 +102,21 @@ export default function TiltCard({
         />
       </motion.div>
 
-      {/* Shadow */}
+      {/* Shadow - simplified */}
       <motion.div
         className="absolute inset-0 -z-10 rounded-2xl"
         animate={{
           opacity: isHovered ? 0.3 : 0.1,
-          x: useTransform(springX, [-0.5, 0.5], [10, -10]),
-          y: useTransform(springY, [-0.5, 0.5], [10, -10]),
+          x: isHovered ? 20 : 0,
+          y: isHovered ? 20 : 0,
+        }}
+        style={{
           boxShadow: isHovered
             ? `0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px ${glowMap[glowColor]}`
             : '0 10px 30px rgba(0, 0, 0, 0.3)',
+          transform: 'translateZ(-50px)',
         }}
         transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-        style={{ transform: 'translateZ(-50px)' }}
       />
     </motion.div>
   );
