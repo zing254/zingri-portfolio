@@ -28,14 +28,15 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "ZINGRI MASTER | CTO & Senior Full-Stack Lead",
   description: "Senior Full-Stack Developer, DevOps Architect, and Offensive Security Specialist with 7+ years of expertise. Building high-scale secure digital ecosystems from Nairobi, Kenya 🇰🇪",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
   keywords: [
     "Senior Full-Stack Developer", "CTO", "DevOps Architect", "Ethical Hacker", 
     "OSCP", "CISSP", "Next.js", "Cybersecurity Kenya", "Zingri Master"
   ],
   authors: [{ name: "Zingri Master" }],
-  icons: {
-    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>",
-  },
   openGraph: {
     title: "ZINGRI MASTER | Senior Full-Stack Lead",
     description: "7+ years of expertise in full-stack development, cloud architecture, and security auditing.",
