@@ -7,11 +7,12 @@ import {
   Terminal, ExternalLink, CheckCircle, Loader2,
   MessageSquare, User, AtSign, Phone
 } from "lucide-react";
+import { useToast } from "@/components/Toaster";
 
 const socialLinks = [
-  { name: "GitHub", icon: Github, url: "https://github.com", color: "primary" },
-  { name: "LinkedIn", icon: Linkedin, url: "https://linkedin.com", color: "secondary" },
-  { name: "Twitter", icon: Twitter, url: "https://twitter.com", color: "accent" },
+  { name: "GitHub", icon: Github, url: "https://github.com/zing254", color: "primary" },
+  { name: "LinkedIn", icon: Linkedin, url: "https://linkedin.com/in/zingri", color: "secondary" },
+  { name: "Twitter", icon: Twitter, url: "https://twitter.com/zingri", color: "accent" },
 ];
 
 export default function Contact() {
@@ -24,7 +25,7 @@ export default function Contact() {
     message: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const { addToast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,13 +38,29 @@ export default function Contact() {
         body: JSON.stringify(formState)
       });
 
+      const result = await response.json();
+      
       if (response.ok) {
-        setSubmitted(true);
+        addToast({
+          type: 'success',
+          title: 'Message Sent!',
+          message: "Thanks for reaching out. I'll respond within 24 hours!"
+        });
         setFormState({ name: "", email: "", subject: "", message: "" });
-        setTimeout(() => setSubmitted(false), 5000);
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Failed to Send',
+          message: result.error || 'Something went wrong. Try again.'
+        });
       }
     } catch (error) {
-      console.error('Failed to send message:', error);
+      console.error('Contact error:', error);
+      addToast({
+        type: 'error',
+        title: 'Network Error',
+        message: 'Unable to connect. Check your connection.'
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -198,7 +215,7 @@ export default function Contact() {
             <motion.div variants={itemVariants} className="relative">
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10 blur-xl" />
               
-              <div className="relative p-8 rounded-2xl glass border border-white/10">
+<div className="relative p-8 rounded-2xl glass border border-white/10">
                 {/* Form header */}
                 <div className="flex items-center gap-3 mb-6">
                   <div className="flex items-center gap-2 px-3 py-1 rounded-full glass border border-primary/30">
@@ -206,18 +223,6 @@ export default function Contact() {
                     <span className="text-xs font-mono text-primary/80">contact_form.sh</span>
                   </div>
                 </div>
-
-                {/* Success message */}
-                {submitted && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mb-6 p-4 rounded-xl bg-accent/10 border border-accent/30 flex items-center gap-3"
-                  >
-                    <CheckCircle className="w-5 h-5 text-accent" />
-                    <span className="text-accent font-mono text-sm">Message sent successfully!</span>
-                  </motion.div>
-                )}
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                   {/* Input fields */}

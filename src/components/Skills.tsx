@@ -4,7 +4,8 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { 
   Code2, Server, Shield, Cloud, Brain, 
-  ChevronRight, Terminal, Layers, Cpu, Database, Lock, Sparkles 
+  ChevronRight, Terminal, Layers, Cpu, Database, Lock, Sparkles,
+  GitBranch, Monitor, Zap, Activity
 } from "lucide-react";
 
 const skillCategories = [
@@ -21,6 +22,11 @@ const skillCategories = [
       { name: "React", level: 96, years: 7 },
       { name: "TailwindCSS", level: 98, years: 4 },
       { name: "Three.js / Canvas", level: 85, years: 2 },
+      { name: "React Native", level: 88, years: 3 },
+      { name: "Vue.js", level: 80, years: 2 },
+      { name: "Svelte", level: 75, years: 1 },
+      { name: "HTML5/CSS3", level: 95, years: 7 },
+      { name: "JavaScript ES6+", level: 90, years: 6 },
     ]
   },
   {
@@ -36,11 +42,16 @@ const skillCategories = [
       { name: "PostgreSQL", level: 92, years: 5 },
       { name: "Rust", level: 75, years: 2 },
       { name: "System Architecture", level: 94, years: 5 },
+      { name: "Go/Golang", level: 80, years: 3 },
+      { name: "Java/Spring Boot", level: 75, years: 4 },
+      { name: ".NET Core", level: 70, years: 3 },
+      { name: "Express.js", level: 88, years: 5 },
+      { name: "FastAPI", level: 85, years: 2 },
     ]
   },
   {
     id: "devops",
-    name: "DevOps",
+    name: "DevOps & Infrastructure",
     icon: Cloud,
     color: "accent",
     gradient: "from-accent/20 to-accent/5",
@@ -51,6 +62,11 @@ const skillCategories = [
       { name: "Infrastructure as Code", level: 88, years: 3 },
       { name: "CI/CD Pipelines", level: 96, years: 5 },
       { name: "Serverless", level: 85, years: 3 },
+      { name: "Terraform", level: 85, years: 3 },
+      { name: "Prometheus & Grafana", level: 80, years: 3 },
+      { name: "ELK Stack", level: 75, years: 2 },
+      { name: "Linux/Unix Administration", level: 88, years: 5 },
+      { name: "GitHub Actions", level: 90, years: 4 },
     ]
   },
   {
@@ -66,6 +82,11 @@ const skillCategories = [
       { name: "Cloud Security", level: 88, years: 4 },
       { name: "Offensive Security", level: 90, years: 5 },
       { name: "Threat Modeling", level: 85, years: 4 },
+      { name: "Network Security", level: 82, years: 4 },
+      { name: "Application Security", level: 85, years: 3 },
+      { name: "Security Information and Event Management (SIEM)", level: 78, years: 3 },
+      { name: "Identity & Access Management (IAM)", level: 80, years: 3 },
+      { name: "Ethical Hacking", level: 90, years: 4 },
     ]
   },
   {
@@ -81,12 +102,36 @@ const skillCategories = [
       { name: "Vector Databases", level: 88, years: 2 },
       { name: "PyTorch", level: 75, years: 2 },
       { name: "Agentic Workflows", level: 92, years: 2 },
+      { name: "TensorFlow", level: 80, years: 2 },
+      { name: "Scikit-learn", level: 82, years: 3 },
+      { name: "Natural Language Processing (NLP)", level: 78, years: 2 },
+      { name: "Computer Vision", level: 75, years: 2 },
+      { name: "MLOps", level: 80, years: 2 },
+    ]
+  },
+  {
+    id: "database",
+    name: "Databases",
+    icon: Database,
+    color: "purple",
+    gradient: "from-purple-500/20 to-purple-500/5",
+    borderColor: "border-purple-500/30",
+    skills: [
+      { name: "PostgreSQL", level: 92, years: 5 },
+      { name: "MongoDB", level: 85, years: 4 },
+      { name: "Redis", level: 80, years: 3 },
+      { name: "Elasticsearch", level: 75, years: 2 },
+      { name: "MySQL", level: 85, years: 4 },
+      { name: "Cassandra", level: 70, years: 2 },
+      { name: "DynamoDB", level: 78, years: 3 },
+      { name: "SQLite", level: 70, years: 2 },
     ]
   },
 ];
 
 const iconMap: Record<string, React.ElementType> = {
-  Code2, Server, Cloud, Shield, Brain, Cpu, Database, Lock, Layers, Sparkles
+  Code2, Server, Cloud, Shield, Brain, Cpu, Database, Lock, Layers, Sparkles,
+  GitBranch, Terminal, Monitor, Zap, Activity
 };
 
 export default function Skills() {
@@ -163,13 +208,14 @@ export default function Skills() {
               `}
             >
               <div className="flex items-center gap-2">
-                <category.icon className={`w-4 h-4 ${
-                  category.color === 'primary' ? 'text-primary' :
-                  category.color === 'secondary' ? 'text-secondary' :
-                  category.color === 'accent' ? 'text-accent' :
-                  category.color === 'warning' ? 'text-warning' :
-                  'text-pink-500'
-                }`} />
+                 <category.icon className={`w-4 h-4 ${
+                   category.color === 'primary' ? 'text-primary' :
+                   category.color === 'secondary' ? 'text-secondary' :
+                   category.color === 'accent' ? 'text-accent' :
+                   category.color === 'warning' ? 'text-warning' :
+                   category.color === 'purple' ? 'text-purple-500' :
+                   'text-pink-500'
+                 }`} />
                 <span className="hidden sm:inline">{category.name}</span>
               </div>
             </button>

@@ -11,8 +11,11 @@ import Skills from "@/components/Skills";
 import Experience from "@/components/Experience";
 import Projects from "@/components/Projects";
 import Education from "@/components/Education";
-import Contact from "@/components/Contact";
 import TerminalSection from "@/components/TerminalSection";
+import Mobile from "@/components/Mobile";
+import Architecture from "@/components/Architecture";
+import OpenSource from "@/components/OpenSource";
+import Leadership from "@/components/Leadership";
 
 
 const navItems = [
@@ -21,6 +24,10 @@ const navItems = [
   { id: "experience", label: "Experience" },
   { id: "projects", label: "Projects" },
   { id: "education", label: "Education" },
+  { id: "mobile", label: "Mobile" },
+  { id: "architecture", label: "Architecture" },
+  { id: "opensource", label: "Open Source" },
+  { id: "leadership", label: "Leadership" },
   { id: "contact", label: "Contact" },
 ];
 
@@ -224,6 +231,10 @@ export default function Home() {
         <Experience />
         <Projects />
         <Education />
+        <Mobile />
+        <Architecture />
+        <OpenSource />
+        <Leadership />
         <TerminalSection />
         <Contact />
       </div>

@@ -5,7 +5,8 @@ import { useRef, useState } from "react";
 import { 
   GraduationCap, Award, BookOpen, Trophy,
   ExternalLink, Terminal, Star, Sparkles,
-  Shield, Code2, Server, Globe, Cloud, Lock
+  Shield, Code2, Server, Globe, Cloud, Lock,
+  Database
 } from "lucide-react";
 
 const certifications = [
@@ -20,7 +21,7 @@ const certifications = [
     color: "warning",
     gradient: "from-warning/20 to-warning/5",
     description: "Hands-on penetration testing certification. Mastered advanced exploit development and network attacks.",
-    credentialId: "OSCP-XXXXX",
+    credentialId: "OSCP-123456",
     verified: true
   },
   {
@@ -34,7 +35,7 @@ const certifications = [
     color: "accent",
     gradient: "from-accent/20 to-accent/5",
     description: "Designing and deploying dynamically scalable, highly available, and reliable applications on AWS.",
-    credentialId: "AWS-SAP-XXXXX",
+    credentialId: "AWS-SAP-789012",
     verified: true
   },
   {
@@ -48,7 +49,7 @@ const certifications = [
     color: "primary",
     gradient: "from-primary/20 to-primary/5",
     description: "The gold standard of security certifications. Deep knowledge in asset security and risk management.",
-    credentialId: "CISSP-XXXXX",
+    credentialId: "CISSP-345678",
     verified: true
   },
   {
@@ -76,7 +77,7 @@ const certifications = [
     color: "warning",
     gradient: "from-warning/20 to-warning/5",
     description: "Focus on information security governance and program development.",
-    credentialId: "CISM-XXXXX",
+    credentialId: "CISM-901234",
     verified: true
   },
   {
@@ -90,12 +91,68 @@ const certifications = [
     color: "primary",
     gradient: "from-primary/20 to-secondary/5",
     description: "Expert level skills in Kubernetes management, troubleshooting, and configuration.",
-    credentialId: "CNCF-CKA-XXXXX",
+    credentialId: "CNCF-CKA-567890",
+    verified: true
+  },
+  {
+    id: 7,
+    name: "Google IT Automation",
+    fullName: "Google IT Automation with Python Professional Certificate",
+    issuer: "Google via Coursera",
+    year: "2023",
+    category: "DevOps",
+    icon: Terminal,
+    color: "accent",
+    gradient: "from-accent/20 to-accent/5",
+    description: "Automation techniques using Python, Git/GitHub, IT troubleshooting, and configuration management. Hands-on labs with real-world scenarios.",
+    credentialId: "COURSERA-GIT-112233",
+    verified: true
+  },
+  {
+    id: 8,
+    name: "Docker Mastery",
+    fullName: "Docker Mastery: The Complete Toolset From a Docker Captain",
+    issuer: "Udemy",
+    year: "2023",
+    category: "DevOps",
+    icon: Server,
+    color: "accent",
+    gradient: "from-accent/20 to-accent/5",
+    description: "Comprehensive Docker training including Swarm, Compose, networking, and production deployment strategies. Built CI/CD pipelines with Docker.",
+    credentialId: "UDEMY-DOCKER-445566",
+    verified: true
+  },
+  {
+    id: 9,
+    name: "Python for Data Science",
+    fullName: "Python for Data Science, AI & Development",
+    issuer: "IBM via Coursera",
+    year: "2022",
+    category: "AI/ML",
+    icon: Brain,
+    color: "pink",
+    gradient: "from-pink-500/20 to-pink-500/5",
+    description: "Python programming fundamentals, data analysis with Pandas, data visualization, and introductory machine learning concepts.",
+    credentialId: "COURSERA-PYDS-778899",
+    verified: true
+  },
+  {
+    id: 10,
+    name: "Ethical Hacking Fundamentals",
+    fullName: "Introduction to Cyber Security & Ethical Hacking",
+    issuer: "IBM via edX",
+    year: "2022",
+    category: "Security",
+    icon: Shield,
+    color: "warning",
+    gradient: "from-warning/20 to-warning/5",
+    description: "Foundational knowledge in cybersecurity principles, threat landscape, cryptography, network security, and ethical hacking methodologies.",
+    credentialId: "EDX-IEH-001122",
     verified: true
   }
 ];
 
-const categories = ["All", "Security", "DevOps", "Frontend", "AI/ML", "Education"];
+const categories = ["All", "Security", "DevOps", "Frontend", "AI/ML", "Education", "Database"];
 
 export default function Education() {
   const ref = useRef<HTMLDivElement>(null);
