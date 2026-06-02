@@ -19,15 +19,15 @@ const socialLinks = [
 export default function Contact() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-   const [formState, setFormState] = useState({
-     name: "",
-     email: "",
-     subject: "",
-     message: ""
-   });
-   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-   const [isSubmitting, setIsSubmitting] = useState(false);
-   const [success, setSuccess] = useState(false);
+    const [formState, setFormState] = useState({
+      name: "",
+      email: "",
+      subject: "",
+      message: ""
+    });
+    const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submissionSuccess, setSubmissionSuccess] = useState(false);
    const { addToast } = useToast();
 
    const handleSubmit = async (e: React.FormEvent) => {
@@ -43,23 +43,24 @@ export default function Contact() {
 
        const result = await response.json();
        
-       if (response.ok) {
-         addToast({
-           type: 'success',
-           title: 'Message Sent!',
-           message: "Thanks for reaching out. I'll respond within 24 hours!"
-         });
-         setFormState({ name: "", email: "", subject: "", message: "" });
-         setSuccess(true);
-         // Reset success state after 3 seconds
-         setTimeout(() => setSuccess(false), 3000);
-       } else {
-         addToast({
-           type: 'error',
-           title: 'Failed to Send',
-           message: result.error || 'Something went wrong. Try again.'
-         });
-       }
+        if (response.ok) {
+          addToast({
+            type: 'success',
+            title: 'Message Sent!',
+            message: "Thanks for reaching out. I'll respond within 24 hours!"
+          });
+          setFormState({ name: "", email: "", subject: "", message: "" });
+          setValidationErrors({}); // Clear validation errors on success
+          setSubmissionSuccess(true);
+          // Reset success state after 5 seconds
+          setTimeout(() => setSubmissionSuccess(false), 5000);
+        } else {
+          addToast({
+            type: 'error',
+            title: 'Failed to Send',
+            message: result.error || 'Something went wrong. Try again.'
+          });
+        }
      } catch (error) {
        console.error('Contact error:', error);
        addToast({
@@ -173,44 +174,44 @@ export default function Contact() {
       );
     };
 
-    const AnimatedSubmitButton = ({ isSubmitting, success, onClick }: { isSubmitting: boolean; success: boolean; onClick: (e: React.FormEvent) => Promise<void> }) => {
-      return (
-        <button
-          type="submit"
-          disabled={isSubmitting || success}
-          onClick={onClick}
-          className={`
-            w-full py-4 rounded-xl font-mono text-sm font-semibold
-            flex items-center justify-center gap-3
-            transition-all duration-300
-            ${isSubmitting 
-              ? 'bg-primary/20 text-primary border border-primary/50 cursor-not-allowed'
-              : success
-                ? 'bg-gradient-to-r from-success via-success/50 to-success text-black hover:shadow-lg hover:shadow-success/30'
-                : 'bg-gradient-to-r from-primary via-secondary to-accent text-black hover:shadow-lg hover:shadow-primary/30'
-            }
-          `}
-          style={!isSubmitting && !success ? { boxShadow: "0 0 30px rgba(0, 212, 255, 0.3)" } : {}}
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Sending...</span>
-            </>
-          ) : success ? (
-            <>
-              <CheckCircle className="w-4 h-4" />
-              <span>Sent!</span>
-            </>
-          ) : (
-            <>
-              <Send className="w-4 h-4" />
-              <span>Send Message</span>
-            </>
-          )}
-        </button>
-      );
-    };
+    const AnimatedSubmitButton = ({ isSubmitting, submissionSuccess, onClick }: { isSubmitting: boolean; submissionSuccess: boolean; onClick: (e: React.FormEvent) => Promise<void> }) => {
+       return (
+         <button
+           type="submit"
+           disabled={isSubmitting || submissionSuccess}
+           onClick={onClick}
+           className={`
+             w-full py-4 rounded-xl font-mono text-sm font-semibold
+             flex items-center justify-center gap-3
+             transition-all duration-300
+             ${isSubmitting 
+               ? 'bg-primary/20 text-primary border border-primary/50 cursor-not-allowed'
+               : submissionSuccess
+                 ? 'bg-gradient-to-r from-success via-success/50 to-success text-black hover:shadow-lg hover:shadow-success/30'
+                 : 'bg-gradient-to-r from-primary via-secondary to-accent text-black hover:shadow-lg hover:shadow-primary/30'
+             }
+           `}
+           style={!isSubmitting && !submissionSuccess ? { boxShadow: "0 0 30px rgba(0, 212, 255, 0.3)" } : {}}
+         >
+           {isSubmitting ? (
+             <>
+               <Loader2 className="w-4 h-4 animate-spin" />
+               <span>Sending...</span>
+             </>
+           ) : submissionSuccess ? (
+             <>
+               <CheckCircle className="w-4 h-4" />
+               <span>Sent!</span>
+             </>
+           ) : (
+             <>
+               <Send className="w-4 h-4" />
+               <span>Send Message</span>
+             </>
+           )}
+         </button>
+       );
+     };
 
    const containerVariants = {
     hidden: { opacity: 0 },
@@ -409,7 +410,7 @@ export default function Contact() {
                     {/* Submit button */}
                     <AnimatedSubmitButton
                       isSubmitting={isSubmitting}
-                      success={success}
+                      submissionSuccess={submissionSuccess}
                       onClick={handleSubmit}
                     />
                 </form>
