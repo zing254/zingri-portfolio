@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { 
@@ -7,7 +8,7 @@ import {
   Terminal, ExternalLink, CheckCircle, Loader2,
   MessageSquare, User, AtSign, Phone
 } from "lucide-react";
-import { useToast } from "@/components/Toaster";
+import { useToast } from "./Toaster";
 
 const socialLinks = [
   { name: "GitHub", icon: Github, url: "https://github.com/zing254", color: "primary" },
@@ -277,54 +278,45 @@ export default function Contact() {
                   </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  {/* Input fields */}
-                  <div className="grid md:grid-cols-2 gap-5">
-                    {inputFields.map((field) => (
-                      <div key={field.name} className="relative">
-                        <label className="block text-xs font-mono text-muted mb-2">
-                          {field.label}
-                        </label>
-                        <div className="relative">
-                          <field.icon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
-                          <input
-                            type={field.type}
-                            name={field.name}
-                            value={formState[field.name as keyof typeof formState]}
-                            onChange={handleChange}
-                            placeholder={field.placeholder}
-                            required
-                            className="w-full pl-11 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 
-                                     focus:border-primary/50 focus:ring-1 focus:ring-primary/20
-                                     transition-all duration-300 font-mono text-sm placeholder:text-muted/50
-                                     hover:border-white/20"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                 <form onSubmit={handleSubmit} className="space-y-5">
+                   {/* Input fields */}
+                   <div className="grid md:grid-cols-2 gap-5">
+                     {inputFields.map((field) => (
+                       <AnimatedInput
+                         key={field.name}
+                         type={field.type}
+                         name={field.name}
+                         label={field.label}
+                         placeholder={field.placeholder}
+                         value={formState[field.name as keyof typeof formState]}
+                         onChange={handleChange}
+                         Icon={field.icon}
+                         error={false} // Will implement validation in later task
+                       />
+                     ))}
+                   </div>
 
-                  {/* Message textarea */}
-                  <div className="relative">
-                    <label className="block text-xs font-mono text-muted mb-2">
-                      Message
-                    </label>
-                    <div className="relative">
-                      <MessageSquare className="absolute left-4 top-4 w-4 h-4 text-muted" />
-                      <textarea
-                        name="message"
-                        value={formState.message}
-                        onChange={handleChange}
-                        placeholder="Tell me about your project, idea, or just say hi..."
-                        rows={6}
-                        required
-                        className="w-full pl-11 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 
-                                 focus:border-primary/50 focus:ring-1 focus:ring-primary/20
-                                 transition-all duration-300 font-mono text-sm placeholder:text-muted/50
-                                 hover:border-white/20 resize-none"
-                      />
-                    </div>
-                  </div>
+                   {/* Message textarea */}
+                   <div className="relative">
+                     <label className="block text-xs font-mono text-muted mb-2">
+                       Message
+                     </label>
+                     <div className="relative">
+                       <MessageSquare className="absolute left-4 top-4 w-4 h-4 text-muted" />
+                       <textarea
+                         name="message"
+                         value={formState.message}
+                         onChange={handleChange}
+                         placeholder="Tell me about your project, idea, or just say hi..."
+                         rows={6}
+                         required
+                         className={`w-full pl-11 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 
+                                focus:border-primary/50 focus:ring-1 focus:ring-primary/20
+                                transition-all duration-300 font-mono text-sm placeholder:text-muted/50
+                                hover:border-white/20 resize-none`}
+                       />
+                     </div>
+                   </div>
 
                   {/* Submit button */}
                   <motion.button
