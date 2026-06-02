@@ -25,6 +25,7 @@ export default function Contact() {
     subject: "",
     message: ""
   });
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { addToast } = useToast();
 
@@ -67,11 +68,55 @@ export default function Contact() {
     }
   };
 
-   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-     setFormState(prev => ({ ...prev, [e.target.name]: e.target.value }));
-   };
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setFormState(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    };
 
-   const AnimatedInput = ({
+    // Validation functions
+    const validateField = (name: string, value: string): string | null => {
+      if (name === 'email') {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!value) return 'Email is required';
+        if (!emailRegex.test(value)) return 'Please enter a valid email';
+        return null;
+      }
+      
+      if (name === 'name' || name === 'subject') {
+        if (!value) return `${name.charAt(0).toUpperCase() + name.slice(1)} is required`;
+        if (value.length < 2) return `${name.charAt(0).toUpperCase() + name.slice(1)} must be at least 2 characters`;
+        return null;
+      }
+      
+      if (name === 'message') {
+        if (!value) return 'Message is required';
+        if (value.length < 10) return 'Message must be at least 10 characters';
+        return null;
+      }
+      
+      return null;
+    };
+
+    const validateForm = () => {
+      const errors: Record<string, string> = {};
+      const fields = ['name', 'email', 'subject', 'message'];
+      
+      for (const field of fields) {
+        const error = validateField(field, formState[field as keyof typeof formState]);
+        if (error) {
+          errors[field] = error;
+        }
+      }
+      
+      setValidationErrors(errors);
+      return Object.keys(errors).length === 0;
+    };
+
+    // Validate form when formState changes
+    useEffect(() => {
+      validateForm();
+    }, [formState]);
+
+    const AnimatedInput = ({
      type,
      name,
      label,
@@ -280,21 +325,21 @@ export default function Contact() {
 
                  <form onSubmit={handleSubmit} className="space-y-5">
                    {/* Input fields */}
-                   <div className="grid md:grid-cols-2 gap-5">
-                     {inputFields.map((field) => (
-                       <AnimatedInput
-                         key={field.name}
-                         type={field.type}
-                         name={field.name}
-                         label={field.label}
-                         placeholder={field.placeholder}
-                         value={formState[field.name as keyof typeof formState]}
-                         onChange={handleChange}
-                         Icon={field.icon}
-                         error={false} // Will implement validation in later task
-                       />
-                     ))}
-                   </div>
+                    <div className="grid md:grid-cols-2 gap-5">
+                      {inputFields.map((field) => (
+                        <AnimatedInput
+                          key={field.name}
+                          type={field.type}
+                          name={field.name}
+                          label={field.label}
+                          placeholder={field.placeholder}
+                          value={formState[field.name as keyof typeof formState]}
+                          onChange={handleChange}
+                          Icon={field.icon}
+                          error={validationErrors[field.name]} // Pass validation error
+                        />
+                      ))}
+                    </div>
 
                    {/* Message textarea */}
                    <div className="relative">
