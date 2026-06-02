@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { 
   Send, Mail, MapPin, Github, Linkedin, Twitter,
   Terminal, ExternalLink, CheckCircle, Loader2,
@@ -66,11 +66,64 @@ export default function Contact() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormState(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+     setFormState(prev => ({ ...prev, [e.target.name]: e.target.value }));
+   };
 
-  const containerVariants = {
+   const AnimatedInput = ({
+     type,
+     name,
+     label,
+     placeholder,
+     value,
+     onChange,
+     Icon,
+     error,
+     ...props
+   }) => {
+     const [isFocused, setIsFocused] = useState(false);
+     const [isFilled, setIsFilled] = useState(!!value);
+     
+     // Handle value changes for filled state detection
+     useEffect(() => {
+       setIsFilled(!!value);
+     }, [value]);
+     
+     return (
+       <div key={name} className="relative">
+         <label className="block text-xs font-mono text-muted mb-2">
+           {label}
+         </label>
+         <div className="relative">
+           {Icon && <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted group-hover:scale-110 transition-transform" />}
+           <input
+             type={type}
+             name={name}
+             value={value}
+             onChange={onChange}
+             placeholder={placeholder}
+             required
+             className={`w-full pl-11 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 
+               focus:border-primary/50 focus:ring-1 focus:ring-primary/20
+               transition-all duration-300 font-mono text-sm placeholder:text-muted/50
+               hover:border-white/20
+               ${isFocused || isFilled ? '-translate-y-2 -scale-[0.9]' : ''}
+               ${error ? 'border-error/50' : ''}`}
+             onFocus={() => setIsFocused(true)}
+             onBlur={() => setIsFocused(false)}
+           />
+           {error && (
+             <MessageSquare className="absolute right-4 top-4 w-4 h-4 text-error/50 animate-pulse" />
+           )}
+           {!error && isFilled && !isFocused && (
+             <CheckCircle className="absolute right-4 top-4 w-4 h-4 text-success/50" />
+           )}
+         </div>
+       </div>
+     );
+   };
+
+   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -143,12 +196,12 @@ export default function Contact() {
                   <Mail className="w-5 h-5 text-primary" />
                   <h3 className="font-heading text-lg font-bold text-white">Direct Email</h3>
                 </div>
-                <a 
-                  href="mailto:zingri@example.com" 
-                  className="block text-primary hover:text-primary/80 transition-colors font-mono text-sm break-all"
-                >
-                  zingri@fleektech.co.ke
-                </a>
+<a 
+  href="mailto:zingri_master254@proton.me" 
+  className="block text-primary hover:text-primary/80 transition-colors font-mono text-sm break-all"
+>
+  zingri_master254@proton.me
+</a>
                 <div className="mt-4 flex items-center gap-2 text-xs text-muted">
                   <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
                   <span className="font-mono">Usually responds within 24h</span>
