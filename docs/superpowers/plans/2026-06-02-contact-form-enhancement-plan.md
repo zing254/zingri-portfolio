@@ -388,54 +388,18 @@ git commit -m "feat: implement form submission success handling"
 **Files:**
 - Modify: `src/components/Contact.tsx`
 
-- [ ] **Step 1: Enhance AnimatedInput icon animations**
+**Goal:** Enhance AnimatedInput icon animations, add icon color shifts based on field state, and update social links icons with hover animations.
 
-```typescript
-{icon && <icon.className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 
-  ${error ? 'text-error/50' : !error && isFilled && !isFocused ? 'text-success/50' : 'text-muted'}
-  group-hover:scale-110 transition-transform duration-300`} />}
-```
+**Implementation Details:**
+1. Enhance AnimatedInput icon animations with state-based colors and hover effects
+2. Update social links icons with hover animations
 
-- [ ] **Step 2: Add icon color shifts based on field state**
-
-```typescript
-// Update the icon color logic to use theme colors
-{icon && <icon.className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 
-  ${error ? 'text-error/50' : !error && isFilled && !isFocused ? 'text-success/50' : 'text-muted'}
-  group-hover:scale-110 transition-transform duration-300`} />}
-```
-
-- [ ] **Step 3: Update social links icons with hover animations**
-
-```typescript
-{socialLinks.map((social) => (
-  <a
-    key={social.name}
-    href={social.url}
-    target="_blank"
-    rel="noopener noreferrer"
-    className={`
-      flex items-center gap-3 p-3 rounded-lg glass border border-white/5
-      hover:border-${social.color}/50 transition-all duration-300 group
-    `}
-  >
-    <social.icon 
-      className={`w-5 h-5 text-${social.color} 
-        group-hover:scale-110 transition-transform duration-300`} 
-    />
-    <span className="font-mono text-sm">{social.name}</span>
-    <ExternalLink className="w-3 h-3 text-muted ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
-  </a>
-))}
-```
-
-- [ ] **Step 4: Run TypeScript check**
-
-```bash
-npx tsc --noEmit
-```
-
-- [ ] **Step 5: Commit icon enhancements**
+**Steps to follow:**
+- [x] **Step 1: Enhance AnimatedInput icon animations**
+- [x] **Step 2: Add icon color shifts based on field state**
+- [x] **Step 3: Update social links icons with hover animations**
+- [x] **Step 4: Run TypeScript check**
+- [x] **Step 5: Commit icon enhancements**
 
 ```bash
 git add src/components/Contact.tsx
