@@ -227,6 +227,24 @@ html {
   outline-offset: 2px;
 }
 
+/* Shake animation for error state */
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-10px);
+  }
+  75% {
+    transform: translateX(10px);
+  }
+}
+
+/* Error animation class */
+.animate-error {
+  animation: shake 0.5s ease-in-out;
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *,

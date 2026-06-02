@@ -28,50 +28,57 @@ export default function Contact() {
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submissionSuccess, setSubmissionSuccess] = useState(false);
+    const [errorAnimation, setErrorAnimation] = useState(false);
    const { addToast } = useToast();
 
-   const handleSubmit = async (e: React.FormEvent) => {
-     e.preventDefault();
-     setIsSubmitting(true);
-     
-     try {
-       const response = await fetch('/api/contact', {
-         method: 'POST',
-         headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify(formState)
-       });
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setIsSubmitting(true);
+      
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formState)
+        });
 
-       const result = await response.json();
-       
-        if (response.ok) {
-          addToast({
-            type: 'success',
-            title: 'Message Sent!',
-            message: "Thanks for reaching out. I'll respond within 24 hours!"
-          });
-          setFormState({ name: "", email: "", subject: "", message: "" });
-          setValidationErrors({}); // Clear validation errors on success
-          setSubmissionSuccess(true);
-          // Reset success state after 5 seconds
-          setTimeout(() => setSubmissionSuccess(false), 5000);
-        } else {
-          addToast({
-            type: 'error',
-            title: 'Failed to Send',
-            message: result.error || 'Something went wrong. Try again.'
-          });
-        }
-     } catch (error) {
-       console.error('Contact error:', error);
-       addToast({
-         type: 'error',
-         title: 'Network Error',
-         message: 'Unable to connect. Check your connection.'
-       });
-     } finally {
-       setIsSubmitting(false);
-     }
-   };
+        const result = await response.json();
+        
+         if (response.ok) {
+           addToast({
+             type: 'success',
+             title: 'Message Sent!',
+             message: "Thanks for reaching out. I'll respond within 24 hours!"
+           });
+           setFormState({ name: "", email: "", subject: "", message: "" });
+           setValidationErrors({}); // Clear validation errors on success
+           setSubmissionSuccess(true);
+           // Reset success state after 5 seconds
+           setTimeout(() => setSubmissionSuccess(false), 5000);
+         } else {
+           addToast({
+             type: 'error',
+             title: 'Failed to Send',
+             message: result.error || 'Something went wrong. Try again.'
+           });
+           // Trigger error animation
+           setErrorAnimation(true);
+           setTimeout(() => setErrorAnimation(false), 500); // Reset after animation completes
+         }
+      } catch (error) {
+        console.error('Contact error:', error);
+        addToast({
+          type: 'error',
+          title: 'Network Error',
+          message: 'Unable to connect. Check your connection.'
+        });
+        // Trigger error animation
+        setErrorAnimation(true);
+        setTimeout(() => setErrorAnimation(false), 500); // Reset after animation completes
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setFormState(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -390,7 +397,7 @@ export default function Contact() {
                   </div>
                 </div>
 
-                 <form onSubmit={handleSubmit} className="space-y-5">
+                  <form onSubmit={handleSubmit} className={`space-y-5 ${errorAnimation ? 'animate-error' : ''}`}>
                    {/* Input fields */}
                     <div className="grid md:grid-cols-2 gap-5">
                       {inputFields.map((field) => (
