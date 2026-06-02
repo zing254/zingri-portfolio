@@ -135,43 +135,61 @@ export default function Contact() {
       const [isFocused, setIsFocused] = useState(false);
       const [isFilled, setIsFilled] = useState(!!value);
       
+      // Helper function to get color based on field name
+      const getColorForField = (fieldName: string) => {
+        switch (fieldName) {
+          case 'name': return 'primary';
+          case 'email': return 'secondary';
+          case 'subject': return 'accent';
+          case 'message': return 'primary';
+          default: return 'muted';
+        }
+      };
+      
       // Handle value changes for filled state detection
       useEffect(() => {
         setIsFilled(!!value);
       }, [value]);
       
-      return (
-        <div key={name} className="relative">
-          <label className="block text-xs font-mono text-muted mb-2">
-            {label}
-          </label>
-          <div className="relative">
-            {Icon && <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted group-hover:scale-110 transition-transform" />}
-            <input
-              type={type}
-              name={name}
-              value={value}
-              onChange={onChange}
-              placeholder={placeholder}
-              required
-              className={`w-full pl-11 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 
-                focus:border-primary/50 focus:ring-1 focus:ring-primary/20
-                transition-all duration-300 font-mono text-sm placeholder:text-muted/50
-                hover:border-white/20
-                ${isFocused || isFilled ? '-translate-y-2 -scale-[0.9]' : ''}
-                ${error ? 'border-error/50' : ''}`}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-            />
-            {error && (
-              <MessageSquare className="absolute right-4 top-4 w-4 h-4 text-error/50 animate-pulse" />
-            )}
-            {!error && isFilled && !isFocused && (
-              <CheckCircle className="absolute right-4 top-4 w-4 h-4 text-success/50" />
-            )}
-          </div>
-        </div>
-      );
+       return (
+         <div key={name} className="relative">
+           <label className="block text-xs font-mono text-muted mb-2">
+             {label}
+           </label>
+           <div className="relative">
+             {Icon && (
+               <Icon 
+                 className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 
+                   ${error ? 'text-error/80' : isFocused ? `text-${getColorForField(name)}` : 'text-muted/60'}
+                   group-hover:scale-110 transition-all duration-300 
+                   ${isFocused || isFilled ? 'scale-110' : ''}`}
+               />
+             )}
+             <input
+               type={type}
+               name={name}
+               value={value}
+               onChange={onChange}
+               placeholder={placeholder}
+               required
+               className={`w-full pl-11 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 
+                 focus:border-primary/50 focus:ring-1 focus:ring-primary/20
+                 transition-all duration-300 font-mono text-sm placeholder:text-muted/50
+                 hover:border-white/20
+                 ${isFocused || isFilled ? '-translate-y-2 -scale-[0.9]' : ''}
+                 ${error ? 'border-error/50' : ''}`}
+               onFocus={() => setIsFocused(true)}
+               onBlur={() => setIsFocused(false)}
+             />
+             {error && (
+               <MessageSquare className="absolute right-4 top-4 w-4 h-4 text-error/50 animate-pulse" />
+             )}
+             {!error && isFilled && !isFocused && (
+               <CheckCircle className="absolute right-4 top-4 w-4 h-4 text-success/50" />
+             )}
+           </div>
+         </div>
+       );
     };
 
     const AnimatedSubmitButton = ({ isSubmitting, submissionSuccess, onClick }: { isSubmitting: boolean; submissionSuccess: boolean; onClick: (e: React.FormEvent) => Promise<void> }) => {
@@ -325,24 +343,29 @@ export default function Contact() {
                   <Terminal className="w-5 h-5 text-accent" />
                   <h3 className="font-heading text-lg font-bold text-white">Connect</h3>
                 </div>
-                <div className="space-y-3">
-                  {socialLinks.map((social) => (
-                    <a
-                      key={social.name}
-                      href={social.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`
-                        flex items-center gap-3 p-3 rounded-lg glass border border-white/5
-                        hover:border-${social.color}/50 transition-all duration-300 group
-                      `}
-                    >
-                      <social.icon className={`w-5 h-5 text-${social.color} group-hover:scale-110 transition-transform`} />
-                      <span className="font-mono text-sm">{social.name}</span>
-                      <ExternalLink className="w-3 h-3 text-muted ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </a>
-                  ))}
-                </div>
+                 <div className="space-y-3">
+                   {socialLinks.map((social) => (
+                     <a
+                       key={social.name}
+                       href={social.url}
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       className={`
+                         flex items-center gap-3 p-3 rounded-lg glass border border-white/5
+                         hover:border-${social.color}/50 transition-all duration-300 group
+                       `}
+                     >
+                       <social.icon 
+                         className={`w-5 h-5 text-${social.color} 
+                           group-hover:scale-110 
+                           group-hover:text-${social.color}/80
+                           transition-all duration-300`}
+                       />
+                       <span className="font-mono text-sm">{social.name}</span>
+                       <ExternalLink className="w-3 h-3 text-muted ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                     </a>
+                   ))}
+                 </div>
               </div>
             </motion.div>
           </motion.div>
