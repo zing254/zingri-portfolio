@@ -20,7 +20,7 @@ export default function Contact() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  // CSS variables for animation timing and fluid typography
+   // CSS variables for animation timing and fluid typography
   const [animationConfig, setAnimationConfig] = React.useState({
     duration: 0.5,
     easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
@@ -35,26 +35,25 @@ export default function Contact() {
     });
   }, []);
 
-  // CSS variables for animation timing and fluid typography
   const styleJsx = `
-    :root {
-      --animation-duration-fast: 0.3s;
-      --animation-duration-normal: 0.5s;
-      --animation-duration-slow: 0.8s;
-      --animation-easing: cubic-bezier(0.4, 0, 0.2, 1);
-      
-      /* Fluid typography */
-      --font-size-heading: clamp(2rem, 5vw + 1rem, 3.5rem);
-      --font-size-subheading: clamp(1.5rem, 3vw + 0.5rem, 2.5rem);
-    }
-    
-    @media (prefers-reduced-motion: reduce) {
-      * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
-    }
+     :root {
+       --animation-duration-fast: 0.3s;
+       --animation-duration-normal: 0.5s;
+       --animation-duration-slow: 0.8s;
+       --animation-easing: cubic-bezier(0.4, 0, 0.2, 1);
+       
+       /* Fluid typography */
+       --font-size-heading: clamp(2rem, 5vw + 1rem, 3.5rem);
+       --font-size-subheading: clamp(1.5rem, 3vw + 0.5rem, 2.5rem);
+     }
+     
+     @media (prefers-reduced-motion: reduce) {
+       * {
+         animation-duration: 0.01ms !important;
+         animation-iteration-count: 1 !important;
+         transition-duration: 0.01ms !important;
+       }
+     }
    `;
   const [formState, setFormState] = useState({
     name: "",
@@ -121,43 +120,52 @@ export default function Contact() {
       setFormState(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-    // Validation functions
+    /**
+     * Validates a individual form field based on its name and value
+     * @param {string} name - The name of the field to validate (name, email, subject, or message)
+     * @param {string} value - The current value of the field
+     * @returns {string | null} - Error message if validation fails, null if validation passes
+     */
     const validateField = (name: string, value: string): string | null => {
-      if (name === 'email') {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!value) return 'Email is required';
-        if (!emailRegex.test(value)) return 'Please enter a valid email';
+        if (name === 'email') {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!value) return 'Email is required';
+            if (!emailRegex.test(value)) return 'Please enter a valid email';
+            return null;
+        }
+        
+        if (name === 'name' || name === 'subject') {
+            if (!value) return `${name.charAt(0).toUpperCase() + name.slice(1)} is required`;
+            if (value.length < 2) return `${name.charAt(0).toUpperCase() + name.slice(1)} must be at least 2 characters`;
+            return null;
+        }
+        
+        if (name === 'message') {
+            if (!value) return 'Message is required';
+            if (value.length < 10) return 'Message must be at least 10 characters';
+            return null;
+        }
+        
         return null;
-      }
-      
-      if (name === 'name' || name === 'subject') {
-        if (!value) return `${name.charAt(0).toUpperCase() + name.slice(1)} is required`;
-        if (value.length < 2) return `${name.charAt(0).toUpperCase() + name.slice(1)} must be at least 2 characters`;
-        return null;
-      }
-      
-      if (name === 'message') {
-        if (!value) return 'Message is required';
-        if (value.length < 10) return 'Message must be at least 10 characters';
-        return null;
-      }
-      
-      return null;
     };
 
+    /**
+     * Validates the entire contact form by checking each field
+     * @returns {boolean} - True if all fields pass validation, false otherwise
+     */
     const validateForm = () => {
-      const errors: Record<string, string> = {};
-      const fields = ['name', 'email', 'subject', 'message'];
-      
-      for (const field of fields) {
-        const error = validateField(field, formState[field as keyof typeof formState]);
-        if (error) {
-          errors[field] = error;
+        const errors: Record<string, string> = {};
+        const fields = ['name', 'email', 'subject', 'message'];
+        
+        for (const field of fields) {
+            const error = validateField(field, formState[field as keyof typeof formState]);
+            if (error) {
+                errors[field] = error;
+            }
         }
-      }
-      
-      setValidationErrors(errors);
-      return Object.keys(errors).length === 0;
+        
+        setValidationErrors(errors);
+        return Object.keys(errors).length === 0;
     };
 
     // Validate form when formState changes
@@ -300,7 +308,26 @@ export default function Contact() {
 
    return (
      <>
-       <style jsx>{styleJsx}</style>
+         <style jsx>{`
+     :root {
+       --animation-duration-fast: 0.3s;
+       --animation-duration-normal: 0.5s;
+       --animation-duration-slow: 0.8s;
+       --animation-easing: cubic-bezier(0.4, 0, 0.2, 1);
+       
+       /* Fluid typography */
+       --font-size-heading: clamp(2rem, 5vw + 1rem, 3.5rem);
+       --font-size-subheading: clamp(1.5rem, 3vw + 0.5rem, 2.5rem);
+     }
+     
+     @media (prefers-reduced-motion: reduce) {
+       * {
+         animation-duration: 0.01ms !important;
+         animation-iteration-count: 1 !important;
+         transition-duration: 0.01ms !important;
+       }
+     }
+   `}</style>
        <section id="contact" ref={ref} className="relative py-32 overflow-hidden">
        {/* Background */}
        <div className="absolute inset-0 grid-bg" />
@@ -309,13 +336,13 @@ export default function Contact() {
 
        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
          {/* Header */}
-            <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 'var(--animation-duration-normal)' }}
-            className="text-center mb-16"
-          >
+             <motion.div
+             initial={{ opacity: 0, y: 30 }}
+             whileInView={{ opacity: 1, y: 0 }}
+             viewport={{ once: true }}
+             transition={{ duration: parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--animation-duration-normal')) || 0.5 }}
+             className="text-center mb-16"
+           >
            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-accent/30 mb-6">
              <span className="text-xs font-mono text-accent/80">ping contact.sh</span>
            </div>
