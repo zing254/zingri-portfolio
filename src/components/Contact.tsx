@@ -19,54 +19,58 @@ const socialLinks = [
 export default function Contact() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [formState, setFormState] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: ""
-  });
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { addToast } = useToast();
+   const [formState, setFormState] = useState({
+     name: "",
+     email: "",
+     subject: "",
+     message: ""
+   });
+   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+   const [isSubmitting, setIsSubmitting] = useState(false);
+   const [success, setSuccess] = useState(false);
+   const { addToast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formState)
-      });
+   const handleSubmit = async (e: React.FormEvent) => {
+     e.preventDefault();
+     setIsSubmitting(true);
+     
+     try {
+       const response = await fetch('/api/contact', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify(formState)
+       });
 
-      const result = await response.json();
-      
-      if (response.ok) {
-        addToast({
-          type: 'success',
-          title: 'Message Sent!',
-          message: "Thanks for reaching out. I'll respond within 24 hours!"
-        });
-        setFormState({ name: "", email: "", subject: "", message: "" });
-      } else {
-        addToast({
-          type: 'error',
-          title: 'Failed to Send',
-          message: result.error || 'Something went wrong. Try again.'
-        });
-      }
-    } catch (error) {
-      console.error('Contact error:', error);
-      addToast({
-        type: 'error',
-        title: 'Network Error',
-        message: 'Unable to connect. Check your connection.'
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+       const result = await response.json();
+       
+       if (response.ok) {
+         addToast({
+           type: 'success',
+           title: 'Message Sent!',
+           message: "Thanks for reaching out. I'll respond within 24 hours!"
+         });
+         setFormState({ name: "", email: "", subject: "", message: "" });
+         setSuccess(true);
+         // Reset success state after 3 seconds
+         setTimeout(() => setSuccess(false), 3000);
+       } else {
+         addToast({
+           type: 'error',
+           title: 'Failed to Send',
+           message: result.error || 'Something went wrong. Try again.'
+         });
+       }
+     } catch (error) {
+       console.error('Contact error:', error);
+       addToast({
+         type: 'error',
+         title: 'Network Error',
+         message: 'Unable to connect. Check your connection.'
+       });
+     } finally {
+       setIsSubmitting(false);
+     }
+   };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setFormState(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -117,57 +121,96 @@ export default function Contact() {
     }, [formState]);
 
     const AnimatedInput = ({
-     type,
-     name,
-     label,
-     placeholder,
-     value,
-     onChange,
-     Icon,
-     error,
-     ...props
-   }) => {
-     const [isFocused, setIsFocused] = useState(false);
-     const [isFilled, setIsFilled] = useState(!!value);
-     
-     // Handle value changes for filled state detection
-     useEffect(() => {
-       setIsFilled(!!value);
-     }, [value]);
-     
-     return (
-       <div key={name} className="relative">
-         <label className="block text-xs font-mono text-muted mb-2">
-           {label}
-         </label>
-         <div className="relative">
-           {Icon && <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted group-hover:scale-110 transition-transform" />}
-           <input
-             type={type}
-             name={name}
-             value={value}
-             onChange={onChange}
-             placeholder={placeholder}
-             required
-             className={`w-full pl-11 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 
-               focus:border-primary/50 focus:ring-1 focus:ring-primary/20
-               transition-all duration-300 font-mono text-sm placeholder:text-muted/50
-               hover:border-white/20
-               ${isFocused || isFilled ? '-translate-y-2 -scale-[0.9]' : ''}
-               ${error ? 'border-error/50' : ''}`}
-             onFocus={() => setIsFocused(true)}
-             onBlur={() => setIsFocused(false)}
-           />
-           {error && (
-             <MessageSquare className="absolute right-4 top-4 w-4 h-4 text-error/50 animate-pulse" />
-           )}
-           {!error && isFilled && !isFocused && (
-             <CheckCircle className="absolute right-4 top-4 w-4 h-4 text-success/50" />
-           )}
-         </div>
-       </div>
-     );
-   };
+      type,
+      name,
+      label,
+      placeholder,
+      value,
+      onChange,
+      Icon,
+      error,
+      ...props
+    }) => {
+      const [isFocused, setIsFocused] = useState(false);
+      const [isFilled, setIsFilled] = useState(!!value);
+      
+      // Handle value changes for filled state detection
+      useEffect(() => {
+        setIsFilled(!!value);
+      }, [value]);
+      
+      return (
+        <div key={name} className="relative">
+          <label className="block text-xs font-mono text-muted mb-2">
+            {label}
+          </label>
+          <div className="relative">
+            {Icon && <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted group-hover:scale-110 transition-transform" />}
+            <input
+              type={type}
+              name={name}
+              value={value}
+              onChange={onChange}
+              placeholder={placeholder}
+              required
+              className={`w-full pl-11 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 
+                focus:border-primary/50 focus:ring-1 focus:ring-primary/20
+                transition-all duration-300 font-mono text-sm placeholder:text-muted/50
+                hover:border-white/20
+                ${isFocused || isFilled ? '-translate-y-2 -scale-[0.9]' : ''}
+                ${error ? 'border-error/50' : ''}`}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+            />
+            {error && (
+              <MessageSquare className="absolute right-4 top-4 w-4 h-4 text-error/50 animate-pulse" />
+            )}
+            {!error && isFilled && !isFocused && (
+              <CheckCircle className="absolute right-4 top-4 w-4 h-4 text-success/50" />
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    const AnimatedSubmitButton = ({ isSubmitting, success, onClick }: { isSubmitting: boolean; success: boolean; onClick: (e: React.FormEvent) => Promise<void> }) => {
+      return (
+        <button
+          type="submit"
+          disabled={isSubmitting || success}
+          onClick={onClick}
+          className={`
+            w-full py-4 rounded-xl font-mono text-sm font-semibold
+            flex items-center justify-center gap-3
+            transition-all duration-300
+            ${isSubmitting 
+              ? 'bg-primary/20 text-primary border border-primary/50 cursor-not-allowed'
+              : success
+                ? 'bg-gradient-to-r from-success via-success/50 to-success text-black hover:shadow-lg hover:shadow-success/30'
+                : 'bg-gradient-to-r from-primary via-secondary to-accent text-black hover:shadow-lg hover:shadow-primary/30'
+            }
+          `}
+          style={!isSubmitting && !success ? { boxShadow: "0 0 30px rgba(0, 212, 255, 0.3)" } : {}}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>Sending...</span>
+            </>
+          ) : success ? (
+            <>
+              <CheckCircle className="w-4 h-4" />
+              <span>Sent!</span>
+            </>
+          ) : (
+            <>
+              <Send className="w-4 h-4" />
+              <span>Send Message</span>
+            </>
+          )}
+        </button>
+      );
+    };
 
    const containerVariants = {
     hidden: { opacity: 0 },
@@ -363,35 +406,12 @@ export default function Contact() {
                      </div>
                    </div>
 
-                  {/* Submit button */}
-                  <motion.button
-                    type="submit"
-                    disabled={isSubmitting}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`
-                      w-full py-4 rounded-xl font-mono text-sm font-semibold
-                      flex items-center justify-center gap-3
-                      transition-all duration-300
-                      ${isSubmitting 
-                        ? 'bg-primary/20 text-primary border border-primary/50 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-primary via-secondary to-accent text-black hover:shadow-lg hover:shadow-primary/30'
-                      }
-                    `}
-                    style={!isSubmitting ? { boxShadow: "0 0 30px rgba(0, 212, 255, 0.3)" } : {}}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Sending...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4" />
-                        <span>Send Message</span>
-                      </>
-                    )}
-                  </motion.button>
+                    {/* Submit button */}
+                    <AnimatedSubmitButton
+                      isSubmitting={isSubmitting}
+                      success={success}
+                      onClick={handleSubmit}
+                    />
                 </form>
 
                 {/* Fun footer */}
