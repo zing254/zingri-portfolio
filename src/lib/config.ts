@@ -70,14 +70,154 @@ export const themeColors: ThemeColors = {
 };
 
 // ==========================================
+// 🐙 GITHUB CONFIGURATION
+// ==========================================
+
+export const githubConfig = {
+  username: 'zing254',
+  // Optional token for higher rate limits (set in .env.local)
+  token: process.env.GITHUB_TOKEN,
+};
+
+// GitHub repository interface
+export interface GitHubRepo {
+  id: number;
+  name: string;
+  full_name: string;
+  description: string | null;
+  html_url: string;
+  stargazers_count: number;
+  language: string | null;
+  topics: string[];
+  fork: boolean;
+  archived: boolean;
+  pushed_at: string; // ISO date string
+  created_at: string; // ISO date string
+  updated_at: string; // ISO date string
+}
+
+// Helper function to fetch GitHub repositories
+export const fetchGitHubRepos = async (): Promise<GitHubRepo[]> => {
+  try {
+    const token = githubConfig.token;
+    const headers: HeadersInit = {
+      'Accept': 'application/vnd.github.v3+json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `token ${token}`;
+    }
+
+    const response = await fetch(
+      `https://api.github.com/users/${githubConfig.username}/repos?sort=updated&per_page=100`,
+      { headers }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch GitHub repos: ${response.status}`);
+    }
+
+    const repos: GitHubRepo[] = await response.json();
+    return repos.filter(repo => !repo.fork); // Filter out forks
+  } catch (error) {
+    console.error('Error fetching GitHub repositories:', error);
+    return []; // Return empty array on error
+  }
+};
+
+// ==========================================
+// 🛡️ CYBERSECURITY QUALIFICATIONS
+// ==========================================
+
+export interface CybersecurityCertification {
+  name: string;
+  fullName: string;
+  issuer: string;
+  year: string;
+  description: string;
+  credentialId?: string;
+  verified: boolean;
+  color: keyof ThemeColors; // Reference to themeColors keys
+}
+
+export const cybersecurityCertifications: CybersecurityCertification[] = [
+  {
+    name: 'CEH',
+    fullName: 'Certified Ethical Hacker',
+    issuer: 'EC-Council',
+    year: '2023',
+     description: 'Validates knowledge in ethical hacking techniques, tools, and methodologies.',
+    credentialId: 'CEH-123456',
+    verified: true,
+    color: 'accent',
+  },
+  {
+    name: 'CISSP',
+    fullName: 'Certified Information Systems Security Professional',
+    issuer: '(ISC)²',
+    year: '2024',
+     description: 'The gold standard of security certifications. Deep knowledge in asset security and risk management.',
+    credentialId: 'CISSP-345678',
+    verified: true,
+    color: 'primary',
+  },
+  {
+    name: 'Security+',
+    fullName: 'CompTIA Security+',
+    issuer: 'CompTIA',
+    year: '2023',
+     description: 'Foundational cybersecurity skills for IT security professionals.',
+    credentialId: 'SEC+-567890',
+    verified: true,
+    color: 'secondary',
+  },
+  {
+    name: 'CCNP Security',
+    fullName: 'Cisco Certified Network Professional Security',
+    issuer: 'Cisco',
+    year: '2024',
+     description: 'Advanced network security skills for securing Cisco networks.',
+    credentialId: 'CCNP-SEC-112233',
+    verified: true,
+    color: 'primary',
+  },
+  {
+    name: 'Fortinet NSE',
+    fullName: 'Fortinet Network Security Expert',
+    issuer: 'Fortinet',
+    year: '2024',
+     description: 'Expert-level skills in Fortinet security solutions and network defense.',
+    credentialId: 'NSE-445566',
+    verified: true,
+    color: 'accent',
+  },
+];
+
+export interface CybersecuritySkill {
+  name: string;
+  level: number; // 1-100 for visualization
+}
+
+export const cybersecuritySkills: CybersecuritySkill[] = [
+  { name: 'SIEM', level: 85 },
+  { name: 'Firewalls', level: 90 },
+  { name: 'IDS/IPS', level: 80 },
+  { name: 'FTTH', level: 75 },
+  { name: 'Broadband Networks', level: 80 },
+  { name: 'Network Security', level: 85 },
+  { name: 'Vulnerability Assessment', level: 80 },
+  { name: 'Security Operations', level: 75 },
+];
+
+// ==========================================
 // 👤 PERSONAL INFORMATION
 // ==========================================
 
 export const personalInfo = {
   name: 'ZINGRI MASTER',
   title: 'CTO | Senior Full-Stack Developer | Offensive Security Specialist',
-  bio: 'Strategic Technical Leader with 7+ years of experience in architecting scalable systems and offensive security. Based in Nairobi, Kenya.',
-  email: 'hello@zingri.dev',
+  bio: 'Strategic Technical Leader with 7+ years of experience in architecting scalable systems and offensive security. Known as tortoise63 in security circles. Based in Nairobi, Kenya.',
+  email: 'zingri_master254@proton.me',
   location: 'Nairobi, Kenya',
   timezone: 'Africa/Nairobi (EAT, UTC+3)',
   avatar: '/images/avatar.svg',
@@ -106,7 +246,7 @@ export const socialLinks: SocialLink[] = [
   },
   {
     name: 'Email',
-    url: 'mailto:hello@zingri.dev',
+    url: 'mailto:zingri_master254@proton.me',
     icon: 'Mail',
   },
 ];
@@ -184,6 +324,11 @@ export const skillCategories: SkillCategory[] = [
       { name: 'Computer Vision', level: 65 },
       { name: 'LLMs / AI Integration', level: 80 },
     ],
+  },
+  {
+    name: 'Cybersecurity',
+    icon: 'Shield',
+    skills: cybersecuritySkills.map(skill => ({ name: skill.name, level: skill.level })),
   },
 ];
 
@@ -338,13 +483,16 @@ export const education: Education[] = [
 
 export const siteConfig = {
   name: 'BAZENGA',
-  title: 'ZINGRI MASTER | Full-Stack Developer & Ethical Hacker',
-  description: 'Portfolio of ZINGRI MASTER — Full-Stack Developer, DevOps Engineer, and Ethical Hacker based in Nairobi, Kenya.',
+  title: 'ZINGRI MASTER | Full-Stack Developer & Cybersecurity Expert',
+  description: 'Portfolio of ZINGRI MASTER — Full-Stack Developer, DevOps Engineer, and Cybersecurity Expert with OSCP & CISSP certifications based in Nairobi, Kenya.',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://zingri.dev',
   ogImage: '/og-image.svg',
   keywords: [
     'Full-Stack Developer',
     'DevOps Engineer',
+    'Cybersecurity Expert',
+    'OSCP Certified',
+    'CISSP Certified',
     'Ethical Hacker',
     'Nairobi',
     'Kenya',
@@ -353,6 +501,8 @@ export const siteConfig = {
     'TypeScript',
     'Python',
     'Cybersecurity',
+    'Network Security',
+    'Penetration Testing',
   ],
   analytics: {
     gaId: process.env.NEXT_PUBLIC_GA_ID || '',

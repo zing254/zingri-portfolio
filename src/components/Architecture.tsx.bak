@@ -3,117 +3,109 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { 
-  Monitor, Smartphone, Terminal, GitBranch, 
-  Code, Zap, Shield, Cloud
+  Server, Terminal, Shield, Cloud, Brain, 
+  Code, GitBranch, Zap, Activity, Monitor,
+  Cpu, Database, Lock, Globe
 } from "lucide-react";
 
-const mobileSkills = [
-  { name: "React Native", level: 90, years: 4 },
-  { name: "Flutter", level: 80, years: 2 },
-  { name: "Swift/iOS", level: 70, years: 3 },
-  { name: "Kotlin/Android", level: 75, years: 3 },
-  { name: "Redux/MobX", level: 85, years: 3 },
-  { name: "REST/API Integration", level: 88, years: 4 },
-  { name: "GraphQL", level: 70, years: 2 },
-  { name: "Firebase", level: 80, years: 3 },
-  { name: "Local Storage (SQLite/AsyncStorage)", level: 75, years: 3 },
-  { name: "Push Notifications", level: 70, years: 2 },
-  { name: "Mobile UI/UX Design", level: 85, years: 4 },
-  { name: "Performance Optimization", level: 80, years: 3 },
-  { name: "Testing (Jest, Detox, XCTest)", level: 75, years: 3 },
-  { name: "CI/CD for Mobile (Fastlane, Bitrise)", level: 70, years: 2 },
+const architectureSkills = [
+  { name: "Microservices Architecture", level: 92, years: 5 },
+  { name: "Event-Driven Systems", level: 88, years: 4 },
+  { name: "Serverless Architecture", level: 85, years: 3 },
+  { name: "Cloud Architecture (AWS/Azure/GCP)", level: 90, years: 5 },
+  { name: "Container Orchestration (K8s)", level: 88, years: 4 },
+  { name: "Infrastructure as Code (Terraform)", level: 85, years: 3 },
+  { name: "API Design (REST/GraphQL/gRPC)", level: 90, years: 4 },
+  { name: "Message Queues (Kafka/RabbitMQ)", level: 80, years: 3 },
+  { name: "Service Mesh (Istio/Linkerd)", level: 75, years: 2 },
+  { name: "Domain-Driven Design (DDD)", level: 82, years: 3 },
+  { name: "CQRS & Event Sourcing", level: 78, years: 3 },
+  { name: "Performance Engineering", level: 85, years: 4 },
+  { name: "Security Architecture", level: 88, years: 4 },
+  { name: "Data Architecture & Modeling", level: 80, years: 4 },
+  { name: "API Gateway & Management", level: 82, years: 3 }
 ];
 
-const mobileProjects = [
+const architectureProjects = [
   {
     id: 1,
-    name: "Enterprise Field Service App",
-    tagline: "Cross-Platform Mobile Solution for Technicians",
-    description: "A comprehensive mobile application for field service technicians to manage work orders, inventory, and customer interactions in real-time, featuring offline capabilities and GPS tracking.",
-    category: "Mobile",
-    tech: ["React Native", "Redux", "React Navigation", "Node.js/Express", "PostgreSQL", "AWS", "Firebase"],
+    name: "Global Financial Platform Modernization",
+    tagline: "Microservices Migration for Banking System",
+    description: "Led the architectural transformation of a legacy monolithic banking platform to a cloud-native microservices architecture on AWS, serving 2M+ customers across 15 countries with 99.99% uptime.",
+    category: "Architecture",
+    tech: ["AWS", "Microservices", "Docker", "Kubernetes", "API Gateway", "Lambda", "DynamoDB", "SNS/SQS", "CloudFront", "Terraform"],
     color: "primary",
     gradient: "from-primary/20 to-primary/5",
-    icon: Smartphone,
+    icon: Server,
     status: "Live",
     link: "https://example.com", // Replace with actual URL
     github: "https://github.com/username/repo", // Replace with actual URL
-    stars: 120,
+    stars: 0, // Enterprise project
     featured: true
   },
   {
     id: 2,
-    name: "Customer Loyalty & Rewards App",
-    tagline: "Flutter-based Customer Engagement Platform",
-    description: "A customer loyalty application built with Flutter that allows users to track points, redeem rewards, receive personalized offers, and engage with the brand through push notifications and social sharing.",
-    category: "Mobile",
-    tech: ["Flutter", "Provider", "Firebase Firestore", "Firebase Auth", "Firebase Cloud Messaging", "Stripe"],
+    name: "IoT Analytics Platform for Smart Cities",
+    tagline: "Real-time Event Processing Architecture",
+    description: "Designed a scalable event-driven architecture processing data from 500K+ IoT sensors across smart city infrastructure, enabling real-time analytics and predictive maintenance for municipal services.",
+    category: "Architecture",
+    tech: ["Azure", "Event Hubs", "Stream Analytics", "Functions", "Cosmos DB", "Power BI", "Kubernetes", "Terraform"],
     color: "secondary",
     gradient: "from-secondary/20 to-secondary/5",
     icon: Zap,
     status: "Live",
     link: "https://example.com", // Replace with actual URL
     github: "https://github.com/username/repo", // Replace with actual URL
-    stars: 85,
+    stars: 0, // Enterprise project
     featured: true
   },
   {
     id: 3,
-    name: "Internal Communication Tool",
-    tagline: "Secure Team Communication Mobile App",
-    description: "A secure internal communication platform for enterprise teams featuring encrypted messaging, file sharing, video conferencing integration, and push notifications, built with native iOS and Android modules.",
-    category: "Mobile",
-    tech: ["Swift", "Kotlin", "Room Database", "WebSocket", "MQTT", "AWS IoT"],
+    name: "Healthcare Data Exchange Platform",
+    tagline: "FHIR-compliant Health Information Exchange",
+    description: "Architected a secure, interoperable health information exchange platform enabling seamless sharing of patient records between hospitals, clinics, and insurance providers while maintaining HIPAA compliance.",
+    category: "Architecture",
+    tech: ["FHIR Servers", "API Management", "OAuth2/OIDC", "PostgreSQL", "Redis", "Kafka", "Elasticsearch", "Kubernetes", "Vault"],
     color: "accent",
     gradient: "from-accent/20 to-accent/5",
     icon: Shield,
-    status: "Beta",
+    status: "Live",
     link: "https://example.com", // Replace with actual URL
     github: "https://github.com/username/repo", // Replace with actual URL
-    stars: 45,
+    stars: 0, // Enterprise project
     featured: false
   }
 ];
 
-export default function Mobile() {
+export default function Architecture() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [activeFilter, setActiveFilter] = useState("All");
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
-  const categories = ["All", "iOS", "Android", "Cross-platform"];
+  const categories = ["All", "Cloud", "Microservices", "Event-Driven", "Security"];
 
-   const filteredProjects = mobileProjects.filter(
-     p => activeFilter === "All" || 
-          (activeFilter === "iOS" && p.tech.some(t => ["Swift", "iOS"].includes(t))) ||
-          (activeFilter === "Android" && p.tech.some(t => ["Kotlin", "Android"].includes(t))) ||
-          (activeFilter === "Cross-platform" && p.tech.some(t => ["React Native", "Flutter"].includes(t)))
+  const filteredProjects = architectureProjects.filter(
+    p => activeFilter === "All" || 
+         (activeFilter === "Cloud" && p.tech.some(t => ["AWS", "Azure", "GCP", "Cloud"].some(c => t.includes(c)))) ||
+         (activeFilter === "Microservices" && p.tech.some(t => t === "Microservices")) ||
+          (activeFilter === "Event-Driven" && p.tech.some(t => ["Event", "Stream", "Kafka", "RabbitMQ"].some(e => t.includes(e)))) ||
+           (activeFilter === "Security" && p.tech.some(t => ["Security", "OAuth", "Vault", "Encryption"].some(s => t.includes(s))))
    );
-   
-   const containerVariants = {
-     hidden: { opacity: 0 },
-     visible: {
-       opacity: 1,
-       transition: { staggerChildren: 0.1, delayChildren: 0.1 }
-     }
-   }
+    const containerVariants = {
+      hidden: { opacity: 0 },
+      visible: {
+        opacity: 1,
+        transition: { staggerChildren: 0.1, delayChildren: 0.1 }
+      }
+    };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30, scale: 0.95 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      scale: 1,
-      transition: { duration: 0.5 }
-    }
-  }
-
-  return (
-    <section id="mobile" ref={ref} className="relative py-32 overflow-hidden">
+   return (
+     <section id="architecture" ref={ref} className="relative py-32 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 grid-bg" />
-      <div className="absolute top-20 left-0 w-[500px] h-[500px] rounded-full blur-[180px] bg-secondary/5" />
-      <div className="absolute bottom-20 right-0 w-[500px] h-[500px] rounded-full blur-[180px] bg-primary/5" />
+      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full blur-[180px] bg-secondary/5" />
+      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full blur-[150px] bg-primary/5" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -124,20 +116,20 @@ export default function Mobile() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-primary/30 mb-6">
-            <span className="text-xs font-mono text-primary/80">npm list mobile --depth=0</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-secondary/30 mb-6">
+            <span className="text-xs font-mono text-secondary/80">cat architecture.json</span>
           </div>
           <h2 className="font-heading text-5xl md:text-6xl font-bold mb-4">
-            <span className="text-white">Mobile </span>
-            <span className="glow-text-primary text-transparent bg-clip-text bg-gradient-to-r from-primary via-white to-secondary">
-              Engineering
+            <span className="text-white">System </span>
+            <span className="glow-text-secondary text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">
+              Architecture
             </span>
           </h2>
           <p className="text-muted max-w-2xl mx-auto">
-            Building exceptional mobile experiences across platforms with performance, security, and user-centric design.
+            Designing scalable, resilient systems that drive business success through thoughtful architecture and engineering excellence.
           </p>
-          <div className="w-24 h-1 mx-auto mt-6 rounded-full bg-gradient-to-r from-primary via-white to-secondary"
-               style={{ boxShadow: "0 0 20px var(--primary)" }} />
+          <div className="w-24 h-1 mx-auto mt-6 rounded-full bg-gradient-to-r from-secondary via-primary to-accent"
+               style={{ boxShadow: "0 0 20px var(--secondary)" }} />
         </motion.div>
 
         {/* Filter tabs */}
@@ -149,8 +141,8 @@ export default function Mobile() {
           className="flex flex-wrap justify-center gap-3 mb-12"
         >
           <div className="flex items-center gap-2 mr-4 text-muted">
-            <Smartphone className="w-4 h-4" />
-            <span className="text-xs font-mono">platform:</span>
+            <Server className="w-4 h-4" />
+            <span className="text-xs font-mono">focus:</span>
           </div>
           {categories.map((category) => (
             <button
@@ -159,7 +151,7 @@ export default function Mobile() {
               className={`
                 relative px-4 py-2 rounded-lg font-mono text-sm transition-all duration-300
                 ${activeFilter === category
-                  ? 'bg-primary/20 text-primary border border-primary/50'
+                  ? 'bg-secondary/20 text-secondary border border-secondary/50'
                   : 'glass border border-white/5 hover:border-white/20 text-muted hover:text-white'
                 }
               `}
@@ -168,7 +160,7 @@ export default function Mobile() {
               {activeFilter === category && (
                 <motion.div
                   layoutId="activeFilter"
-                  className="absolute inset-0 bg-primary/10 rounded-lg -z-10"
+                  className="absolute inset-0 bg-secondary/10 rounded-lg -z-10"
                 />
               )}
             </button>
@@ -185,10 +177,10 @@ export default function Mobile() {
         >
           <div className="flex items-center gap-4 mb-6">
             <Terminal className="w-4 h-4 text-muted" />
-            <span className="text-xs font-mono text-muted">MOBILE_TECH_STACK</span>
+            <span className="text-xs font-mono text-muted">ARCH_SKILLS</span>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {mobileSkills.map((skill, index) => (
+            {architectureSkills.map((skill, index) => (
               <motion.div
                 key={skill.name}
                 initial={{ opacity: 0, y: 20 }}
@@ -198,8 +190,8 @@ export default function Mobile() {
                 className="flex items-center gap-4 p-4 rounded-xl glass border border-white/5"
               >
                 <div className="flex items-center gap-3">
-                  <div className={`p-3 rounded-xl bg-primary/10`}>
-                    <Monitor className={`w-5 h-5 text-primary`} />
+                  <div className={`p-3 rounded-xl bg-secondary/10`}>
+                    <Server className={`w-5 h-5 text-secondary`} />
                   </div>
                   <div>
                     <h3 className="font-heading font-bold text-white">{skill.name}</h3>
@@ -212,9 +204,9 @@ export default function Mobile() {
                     whileInView={{ width: `${skill.level}%` }}
                     viewport={{ once: true }}
                     transition={{ duration: 1, delay: index * 0.05, ease: [0.25, 0.1, 0.25, 1] }}
-                    className={`h-full rounded-full relative bg-gradient-to-r from-primary to-cyan-300`}
+                    className={`h-full rounded-full relative bg-gradient-to-r from-secondary to-purple-300`}
                     style={{ 
-                      boxShadow: `0 0 10px var(--primary)` 
+                      boxShadow: `0 0 10px var(--secondary)` 
                     }}
                   />
                 </div>
@@ -348,7 +340,7 @@ export default function Mobile() {
                     <div className="flex-grow" />
                     
                     <motion.div
-                      style={{ transform: `translateX(${hoveredId === project.id ? 0 : 4}px)`, transition: 'transform 0.2s' }}
+                      animate{{ x: hoveredId === project.id ? 0 : 4 }}
                       transition={{ duration: 0.2 }}
                       className={`flex items-center gap-1 text-sm font-mono ${
                         project.color === 'primary' ? 'text-primary' :
@@ -392,15 +384,15 @@ export default function Mobile() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mt-16 text-center"
         >
-          <div className="inline-flex items-center gap-4 p-6 rounded-2xl glass border border-primary/20">
-            <Terminal className="w-5 h-5 text-primary" />
-            <span className="text-muted font-mono text-sm">More mobile projects on GitHub</span>
+          <div className="inline-flex items-center gap-4 p-6 rounded-2xl glass border border-secondary/20">
+            <Terminal className="w-5 h-5 text-secondary" />
+            <span className="text-muted font-mono text-sm">More architecture designs on GitHub</span>
             <motion.a
               href="https://github.com"
               target="_blank"
               rel="noopener noreferrer"
               whileHover={{ scale: 1.05 }}
-              className="px-4 py-2 rounded-lg bg-primary/10 border border-primary/30 text-primary font-mono text-sm hover:bg-primary/20 transition-colors"
+              className="px-4 py-2 rounded-lg bg-secondary/10 border border-secondary/30 text-secondary font-mono text-sm hover:bg-secondary/20 transition-colors"
             >
               View All →
             </motion.a>
@@ -409,7 +401,7 @@ export default function Mobile() {
       </div>
 
       {/* Bottom separator */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-secondary/50 to-transparent" />
     </section>
   );
 }

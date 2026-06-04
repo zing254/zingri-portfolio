@@ -143,17 +143,17 @@ export default function OpenSource() {
 
   const categories = ["All", "AI/ML Security", "DevOps Tools", "Security Tools"];
 
-  const filteredProjects = notableProjects.filter(
-    p => activeFilter === "All" || p.category === activeFilter
-  );
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1, delayChildren: 0.1 }
-    }
-  };
+   const filteredProjects = notableProjects.filter(
+     p => activeFilter === "All" || p.category === activeFilter
+   );
+   
+   const containerVariants = {
+     hidden: { opacity: 0 },
+     visible: {
+       opacity: 1,
+       transition: { staggerChildren: 0.1, delayChildren: 0.1 }
+     }
+   }
 
   const itemVariants = {
     hidden: { opacity: 0, y: 30, scale: 0.95 },
@@ -163,7 +163,7 @@ export default function OpenSource() {
       scale: 1,
       transition: { duration: 0.5 }
     }
-  };
+  }
 
   return (
     <section id="opensource" ref={ref} className="relative py-32 overflow-hidden">
@@ -431,7 +431,7 @@ export default function OpenSource() {
                     <div className="flex-grow" />
                     
                     <motion.div
-                      animate{{ x: hoveredId === project.id ? 0 : 4 }}
+                      style={{ transform: `translateX(${hoveredId === project.id ? 0 : 4}px)`, transition: 'transform 0.2s' }}
                       transition={{ duration: 0.2 }}
                       className={`flex items-center gap-1 text-sm font-mono ${
                         project.id === 1 ? 'text-primary' :

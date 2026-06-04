@@ -34,14 +34,16 @@ export const metadata: Metadata = {
     default: "ZINGRI MASTER | CTO & Senior Full-Stack Lead",
     template: "%s | ZINGRI MASTER"
   },
-  description: "Senior Full-Stack Developer, DevOps Architect, and Offensive Security Specialist with 7+ years of expertise. OSCP & CISSP certified. Building high-scale secure digital ecosystems from Nairobi, Kenya 🇰🇪",
+  description: "Senior Full-Stack Developer, DevOps Architect, and Cybersecurity Expert with OSCP & CISSP certifications. Specializing in offensive security, network defense, and secure digital ecosystems from Nairobi, Kenya 🇰🇪",
   icons: {
     icon: "/icon.svg",
     apple: "/icon.svg",
   },
   keywords: [
-    "Senior Full-Stack Developer", "CTO", "DevOps Architect", "Ethical Hacker", 
-    "OSCP", "CISSP", "Next.js", "Cybersecurity Kenya", "Zingri Master", "AWS Solutions Architect"
+    "Senior Full-Stack Developer", "CTO", "DevOps Architect", "Cybersecurity Expert", 
+    "OSCP Certified", "CISSP Certified", "Ethical Hacker", "Penetration Tester",
+    "Network Security Specialist", "Next.js", "TypeScript", "Python",
+    "Zingri Master", "Nairobi", "Kenya", "Offensive Security"
   ],
   authors: [{ name: "Zingri Master", url: "https://zingri.dev" }],
   creator: "Zingri Master",

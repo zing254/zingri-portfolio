@@ -6,8 +6,9 @@ import {
   GraduationCap, Award, BookOpen, Trophy,
   ExternalLink, Terminal, Star, Sparkles,
   Shield, Code2, Server, Globe, Cloud, Lock,
-  Database
+  Database, Micronet, Zap, Activity
 } from "lucide-react";
+import { cybersecurityCertifications } from "@/lib/config";
 
 const certifications = [
   {
@@ -152,6 +153,40 @@ const certifications = [
   }
 ];
 
+// Helper function to get icon for cybersecurity certifications
+const getCertIcon = (name: string) => {
+  switch (name) {
+    case "CEH": return Shield;
+    case "CISSP": return Lock;
+    case "Security+": return Shield;
+    case "CCNP Security": return Micronet;
+    case "Fortinet NSE": return Zap;
+    default: return Shield;
+  }
+};
+
+// Add cybersecurity certifications from config to the beginning of the list
+const allCertifications = [
+  ...cybersecurityCertifications.map((cert, index) => ({
+    id: 100 + index, // Offset IDs to avoid conflicts
+    name: cert.name,
+    fullName: cert.fullName,
+    issuer: cert.issuer,
+    year: cert.year,
+    category: "Security", // All cybersecurity certs go in Security category
+    icon: getCertIcon(cert.name),
+    color: cert.color,
+    gradient: cert.color === 'primary' ? 'from-primary/20 to-primary/5' :
+            cert.color === 'secondary' ? 'from-secondary/20 to-secondary/5' :
+            cert.color === 'accent' ? 'from-accent/20 to-accent/5' :
+            'from-warning/20 to-warning/5',
+    description: cert.description,
+    credentialId: cert.credentialId,
+    verified: cert.verified,
+  })),
+  ...certifications
+];
+
 const categories = ["All", "Security", "DevOps", "Frontend", "AI/ML", "Education", "Database"];
 
 export default function Education() {
@@ -160,7 +195,7 @@ export default function Education() {
   const [activeFilter, setActiveFilter] = useState("All");
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
-  const filteredCerts = certifications.filter(
+  const filteredCerts = allCertifications.filter(
     c => activeFilter === "All" || c.category === activeFilter
   );
 
@@ -181,11 +216,11 @@ export default function Education() {
     }
   };
 
-  const stats = [
-    { label: "Certifications", value: certifications.length, icon: Award },
-    { label: "Verified", value: certifications.filter(c => c.verified).length, icon: Trophy },
-    { label: "In Progress", value: certifications.filter(c => c.credentialId.includes("XXXXX")).length, icon: BookOpen },
-  ];
+const stats = [
+  { label: "Certifications", value: allCertifications.length, icon: Award },
+  { label: "Verified", value: allCertifications.filter(c => c.verified).length, icon: Trophy },
+  { label: "In Progress", value: allCertifications.filter(c => c.credentialId.includes("XXXXX")).length, icon: BookOpen },
+];
 
   return (
     <section id="education" ref={ref} className="relative py-32 overflow-hidden">
@@ -207,16 +242,16 @@ export default function Education() {
             <span className="text-xs font-mono text-secondary/80">cat education.json</span>
           </div>
           <h2 className="font-heading text-5xl md:text-6xl font-bold mb-4">
-            <span className="text-white">Certifications & </span>
-            <span className="glow-text-secondary text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">
-              Learning
+            <span className="text-white">Cybersecurity </span>
+            <span className="glow-text-primary text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+              Certifications
             </span>
           </h2>
           <p className="text-muted max-w-2xl mx-auto">
-            Continuous learning is the only constant. Here&apos;s my journey of growth and skill acquisition.
+            Industry-recognized certifications validating expertise in offensive security, network defense, and information security management.
           </p>
-          <div className="w-24 h-1 mx-auto mt-6 rounded-full bg-gradient-to-r from-secondary via-primary to-accent"
-               style={{ boxShadow: "0 0 20px var(--secondary)" }} />
+          <div className="w-24 h-1 mx-auto mt-6 rounded-full bg-gradient-to-r from-primary via-secondary to-accent"
+               style={{ boxShadow: "0 0 20px var(--primary)" }} />
         </motion.div>
 
         {/* Stats */}

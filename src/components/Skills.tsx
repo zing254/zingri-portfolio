@@ -7,6 +7,7 @@ import {
   ChevronRight, Terminal, Layers, Cpu, Database, Lock, Sparkles,
   GitBranch, Monitor, Zap, Activity
 } from "lucide-react";
+import { cybersecuritySkills } from "@/lib/config";
 
 const skillCategories = [
   {
@@ -109,25 +110,38 @@ const skillCategories = [
       { name: "MLOps", level: 80, years: 2 },
     ]
   },
-  {
-    id: "database",
-    name: "Databases",
-    icon: Database,
-    color: "purple",
-    gradient: "from-purple-500/20 to-purple-500/5",
-    borderColor: "border-purple-500/30",
-    skills: [
-      { name: "PostgreSQL", level: 92, years: 5 },
-      { name: "MongoDB", level: 85, years: 4 },
-      { name: "Redis", level: 80, years: 3 },
-      { name: "Elasticsearch", level: 75, years: 2 },
-      { name: "MySQL", level: 85, years: 4 },
-      { name: "Cassandra", level: 70, years: 2 },
-      { name: "DynamoDB", level: 78, years: 3 },
-      { name: "SQLite", level: 70, years: 2 },
-    ]
-  },
-];
+    {
+      id: "database",
+      name: "Databases",
+      icon: Database,
+      color: "purple",
+      gradient: "from-purple-500/20 to-purple-500/5",
+      borderColor: "border-purple-500/30",
+      skills: [
+        { name: "PostgreSQL", level: 92, years: 5 },
+        { name: "MongoDB", level: 85, years: 4 },
+        { name: "Redis", level: 80, years: 3 },
+        { name: "Elasticsearch", level: 75, years: 2 },
+        { name: "MySQL", level: 85, years: 4 },
+        { name: "Cassandra", level: 70, years: 2 },
+        { name: "DynamoDB", level: 78, years: 3 },
+        { name: "SQLite", level: 70, years: 2 },
+      ]
+    },
+    {
+      id: "cybersecurity",
+      name: "Cybersecurity",
+      icon: Shield,
+      color: "warning",
+      gradient: "from-warning/20 to-warning/5",
+      borderColor: "border-warning/30",
+      skills: cybersecuritySkills.map(skill => ({
+        name: skill.name,
+        level: skill.level,
+        years: Math.max(1, Math.floor(skill.level / 10)) // Rough estimate of years based on level
+      })),
+    },
+  ];
 
 const iconMap: Record<string, React.ElementType> = {
   Code2, Server, Cloud, Shield, Brain, Cpu, Database, Lock, Layers, Sparkles,
