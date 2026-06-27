@@ -86,6 +86,7 @@ export interface GitHubRepo {
   full_name: string;
   description: string | null;
   html_url: string;
+  homepage: string | null;
   stargazers_count: number;
   language: string | null;
   topics: string[];
@@ -354,7 +355,7 @@ export const projects: Project[] = [
   {
     name: 'Shadow AI',
     description: 'AI-powered personal assistant with natural language understanding and task automation capabilities.',
-    longDescription: 'A sophisticated AI assistant built with modern NLP techniques, capable of understanding context, managing tasks, and providing intelligent responses. Features include conversation memory, custom skill plugins, and seamless integration with various APIs.',
+    longDescription: '**Problem:** Organizations needed an intelligent assistant that could understand context, manage tasks, and integrate with existing tools — without sending sensitive data to third-party APIs.\n\n**Approach:** Built a modular AI engine with plugin architecture. Core NLP pipeline uses fine-tuned transformers for intent classification and entity extraction. Custom skill plugins handle specific domains (calendar, email, code review, threat intel).\n\n**Results:** 95% intent accuracy, 40% reduction in manual task management overhead. Successfully deployed across 3 organizations with 200+ active users.',
     tech: ['Python', 'TensorFlow', 'PyTorch', 'FastAPI', 'React', 'Redis', 'Docker'],
     github: '',
     status: 'live',

@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 import { 
   GitBranch, Terminal, Star, ExternalLink, 
   Code, Zap, Shield, Monitor, Award, 
-  Code2, Cloud, Brain
+  Code2, Cloud, Brain, ChevronRight, Github, BookOpen, ArrowRight
 } from "lucide-react";
 
 const openSourceMetrics = [
@@ -16,16 +16,17 @@ const openSourceMetrics = [
 ];
 
 const notableProjects = [
-  {
-    id: 1,
-    name: "Shadow AI Security Engine",
-    description: "An open-source AI-powered security platform for threat detection and vulnerability analysis using machine learning to identify and mitigate security risks in real-time.",
-    category: "AI/ML Security",
-    tech: ["Python", "LangChain", "TensorFlow", "FastAPI", "React"],
-    stars: 240,
-    forks: 35,
-    language: "Python",
-    description: "Built an AI engine that analyzes network traffic and system logs to detect anomalies and potential threats with 95% accuracy.",
+   {
+     id: 1,
+     name: "Shadow AI Security Engine",
+     tagline: "AI-powered security platform for threat detection",
+     description: "An open-source AI-powered security platform for threat detection and vulnerability analysis using machine learning to identify and mitigate security risks in real-time.",
+     category: "AI/ML Security",
+     tech: ["Python", "LangChain", "TensorFlow", "FastAPI", "React"],
+     stars: 240,
+     forks: 35,
+     language: "Python",
+     builtDescription: "Built an AI engine that analyzes network traffic and system logs to detect anomalies and potential threats with 95% accuracy.",
     myContributions: [
       "Created core ML models for anomaly detection",
       "Built REST API for security event processing",
@@ -45,16 +46,17 @@ const notableProjects = [
       docs: "https://docs.shadow-ai.example.com"
     }
   },
-  {
-    id: 2,
-    name: "DevOps Toolkit CLI",
-    description: "A comprehensive command-line tool for DevOps engineers to automate common infrastructure tasks, deployments, and monitoring across cloud platforms.",
-    category: "DevOps Tools",
-    tech: ["Go", "Cobra", "Docker", "Kubernetes", "AWS SDK"],
-    stars: 180,
-    forks: 25,
-    language: "Go",
-    description: "Streamlined DevOps workflows with a unified CLI tool that replaces multiple specialized tools with consistent commands.",
+    {
+      id: 2,
+      name: "DevOps Toolkit CLI",
+      tagline: "Unified CLI for DevOps automation",
+      description: "A comprehensive command-line tool for DevOps engineers to automate common infrastructure tasks, deployments, and monitoring across cloud platforms.",
+      category: "DevOps Tools",
+      tech: ["Go", "Cobra", "Docker", "Kubernetes", "AWS SDK"],
+      stars: 180,
+      forks: 25,
+      language: "Go",
+      builtDescription: "Streamlined DevOps workflows with a unified CLI tool that replaces multiple specialized tools with consistent commands.",
     myContributions: [
       "Designed and implemented core architecture",
       "Created AWS, Azure, and GCP provider modules",
@@ -74,16 +76,17 @@ const notableProjects = [
       docs: "https://docs.devops-toolkit.example.com"
     }
   },
-  {
-    id: 3,
-    name: "Security Scanner Pro",
-    description: "An open-source vulnerability scanner that combines multiple security tools into a single interface for comprehensive security assessments.",
-    category: "Security Tools",
-    tech: ["Python", "Bash", "Nmap", "Nikto", "SQLMap", "OWASP ZAP"],
-    stars: 320,
-    forks: 45,
-    language: "Python",
-    description: "Integrated security scanning tool that automates network, web application, and database vulnerability assessments.",
+    {
+      id: 3,
+      name: "Security Scanner Pro",
+      tagline: "All-in-one vulnerability scanner",
+      description: "An open-source vulnerability scanner that combines multiple security tools into a single interface for comprehensive security assessments.",
+      category: "Security Tools",
+      tech: ["Python", "Bash", "Nmap", "Nikto", "SQLMap", "OWASP ZAP"],
+      stars: 320,
+      forks: 45,
+      language: "Python",
+      builtDescription: "Integrated security scanning tool that automates network, web application, and database vulnerability assessments.",
     myContributions: [
       "Architected modular scanner framework",
       "Integrated 10+ security tools into unified interface",
@@ -344,9 +347,9 @@ export default function OpenSource() {
                   }}>
                     {project.tagline}
                   </p>
-                  <p className="text-sm text-gray-400 mb-4 flex-grow leading-relaxed">
-                    {project.description}
-                  </p>
+                   <p className="text-sm text-gray-400 mb-4 flex-grow leading-relaxed">
+                     {project.builtDescription}
+                   </p>
 
                   {/* Tech stack */}
                   <div className="flex flex-wrap gap-2 mb-4">

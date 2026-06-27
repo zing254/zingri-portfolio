@@ -1,75 +1,83 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { connectDB } from '@/lib/mongodb';
+import { BlogPost } from '@/lib/models/BlogPost';
+import { requireAuth } from '@/lib/auth';
+import { checkRateLimit } from '@/lib/rate-limit';
+
+export async function GET(request: Request) {
+  try {
+    const ip = request.headers.get('x-forwarded-for') || 'unknown';
+    const rateCheck = checkRateLimit(`blog:${ip}`, 30, 60 * 1000);
+    if (!rateCheck.allowed) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+    }
+    await connectDB();
+    const posts = await BlogPost.find({ published: true })
+      .select('title slug excerpt tags createdAt')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return NextResponse.json({ posts });
+  } catch (error: any) {
+    console.error('Error fetching blog posts:', error);
+    return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 });
+  }
+}
 
 export async function POST(request: Request) {
+  const authError = requireAuth(request);
+  if (authError) return authError;
+
   try {
-    const { title, slug, content, date, excerpt, tags } = await request.json();
+    const { title, slug, content, excerpt, tags } = await request.json();
 
     if (!title || !slug || !content) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing required fields: title, slug, content' }, { status: 400 });
     }
 
-    const fileName = `${slug}.md`;
-    const filePath = path.join(process.cwd(), 'src/content/blog', fileName);
+    await connectDB();
 
-    // Create directory if it doesn't exist
-    const dirPath = path.dirname(filePath);
-    if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath, { recursive: true });
+    const existing = await BlogPost.findOne({ slug });
+    if (existing) {
+      return NextResponse.json({ error: 'A post with this slug already exists' }, { status: 409 });
     }
 
-    const fileContent = `---
-title: "${title}"
-date: "${date || new Date().toISOString().split('T')[0]}"
-excerpt: "${excerpt || ''}"
-tags: ${JSON.stringify(tags || [])}
----
+    const post = await BlogPost.create({
+      title,
+      slug,
+      content,
+      excerpt: excerpt || '',
+      tags: tags || [],
+      published: true,
+    });
 
-${content}`;
-
-    fs.writeFileSync(filePath, fileContent);
-
-    return NextResponse.json({ success: true, message: 'Blog post created successfully' });
+    return NextResponse.json({ success: true, post }, { status: 201 });
   } catch (error: any) {
     console.error('Error creating blog post:', error);
     return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }
 }
 
-export async function GET() {
-  try {
-    const blogDir = path.join(process.cwd(), 'src/content/blog');
-    if (!fs.existsSync(blogDir)) {
-      return NextResponse.json({ posts: [] });
-    }
-
-    const files = fs.readdirSync(blogDir);
-    const posts = files.filter(file => file.endsWith('.md')).map(file => {
-      return {
-        slug: file.replace('.md', ''),
-        fileName: file
-      };
-    });
-
-    return NextResponse.json({ posts });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-}
-
 export async function DELETE(request: Request) {
+  const authError = requireAuth(request);
+  if (authError) return authError;
+
   try {
     const { slug } = await request.json();
-    if (!slug) return NextResponse.json({ error: 'Missing slug' }, { status: 400 });
+    if (!slug) {
+      return NextResponse.json({ error: 'Missing slug' }, { status: 400 });
+    }
 
-    const filePath = path.join(process.cwd(), 'src/content/blog', `${slug}.md`);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    await connectDB();
+    const result = await BlogPost.findOneAndDelete({ slug });
+
+    if (!result) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
+    console.error('Error deleting blog post:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

@@ -183,6 +183,16 @@ export default function Contact() {
       Icon,
       error,
       ...props
+    }: {
+      type: string;
+      name: string;
+      label: string;
+      placeholder: string;
+      value: string;
+      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+      Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+      error?: string;
+      [key: string]: any;
     }) => {
       const [isFocused, setIsFocused] = useState(false);
       const [isFilled, setIsFilled] = useState(!!value);

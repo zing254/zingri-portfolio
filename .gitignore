@@ -38,6 +38,18 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Agent/plan files
+.opencode/
+.continue/
+docs/
+
+# Backup/temp files
+*.backup
+*.backup2
+*.bak
+*.tmp
+*.work
+
 # IDE
 .idea/
 .vscode/

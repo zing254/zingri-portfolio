@@ -3,19 +3,24 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Menu, X, Terminal } from "lucide-react";
+import dynamic from "next/dynamic";
 import Hero from "@/components/Hero";
-import Particles from "@/components/Particles";
 import LoadingScreen from "@/components/LoadingScreen";
 import About from "@/components/About";
 import Skills from "@/components/Skills";
 import Experience from "@/components/Experience";
 import Projects from "@/components/Projects";
 import Education from "@/components/Education";
-import TerminalSection from "@/components/TerminalSection";
 import Mobile from "@/components/Mobile";
-import Architecture from "@/components/Architecture";
 import OpenSource from "@/components/OpenSource";
 import Leadership from "@/components/Leadership";
+import Contact from "@/components/Contact";
+import ErrorBoundary from "@/components/ErrorBoundary";
+
+const Particles = dynamic(() => import("@/components/Particles"), { ssr: false });
+const Architecture = dynamic(() => import("@/components/Architecture"), { ssr: false });
+const TerminalSection = dynamic(() => import("@/components/TerminalSection"), { ssr: false });
+const Testimonials = dynamic(() => import("@/components/Testimonials"), { ssr: false });
 
 
 const navItems = [
@@ -102,12 +107,14 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const { scrollYProgress } = useScroll();
   const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
+      setShowScrollTop(window.scrollY > 500);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -123,8 +130,11 @@ export default function Home() {
        <LoadingScreen onComplete={() => setIsLoading(false)} />
        {!isLoading && (
          <main className="relative min-h-screen bg-background overflow-x-hidden">
-           <Particles />
-           <CustomCursor />
+           <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[10000] focus:px-4 focus:py-2 focus:bg-primary focus:text-black focus:rounded-lg focus:font-mono focus:text-sm">
+             Skip to main content
+           </a>
+        <ErrorBoundary><Particles /></ErrorBoundary>
+        <CustomCursor />
            
            {/* Progress bar */}
            <motion.div
@@ -224,7 +234,7 @@ export default function Home() {
       </motion.nav>
 
       {/* Main content */}
-      <div className="relative">
+      <div id="main-content" className="relative">
         <Hero />
         <About />
         <Skills />
@@ -232,12 +242,24 @@ export default function Home() {
         <Projects />
         <Education />
         <Mobile />
-        <Architecture />
+        <ErrorBoundary><Architecture /></ErrorBoundary>
         <OpenSource />
         <Leadership />
-        <TerminalSection />
+        <ErrorBoundary><Testimonials /></ErrorBoundary>
+        <ErrorBoundary><TerminalSection /></ErrorBoundary>
         <Contact />
       </div>
+
+      {/* Scroll to top */}
+      <motion.button
+        initial={false}
+        animate={{ opacity: showScrollTop ? 1 : 0, y: showScrollTop ? 0 : 20 }}
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        className="fixed bottom-8 right-8 z-[500] p-3 rounded-xl glass border border-primary/30 text-primary hover:bg-primary/10 transition-all"
+        aria-label="Scroll to top"
+      >
+        <Terminal className="w-5 h-5 rotate-180" />
+      </motion.button>
 
       {/* Footer */}
       <footer className="relative py-12 border-t border-white/10">
@@ -256,7 +278,7 @@ export default function Home() {
             </div>
             
             <div className="flex items-center gap-6 text-sm text-muted font-mono">
-              <span>© 2024 Zingri Master</span>
+              <span>© {new Date().getFullYear()} Zingri Master</span>
               <span className="hidden sm:inline">•</span>
               <span className="hidden sm:inline">Made with 💀 in Nairobi 🇰🇪</span>
             </div>

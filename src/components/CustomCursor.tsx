@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { motion, useMotionValue, useSpring, useCycle } from 'framer-motion';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { useCycle } from 'framer-motion';
 
 export default function CustomCursor() {
   const [isVisible, setIsVisible] = useState(false);
@@ -10,8 +11,8 @@ export default function CustomCursor() {
   const [isLoading, setIsLoading] = useState(false);
   const [isTriggered, setIsTriggered] = useState(false);
   
-  // State cycle for cursor states: active -> loading -> triggered -> active
-  const [state, setState] = useCycle('active', 'loading', 'triggered');
+   // State cycle for cursor states: active -> loading -> triggered -> active
+   const [state, setState] = useCycle('active', 'loading', 'triggered');
 
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
@@ -93,13 +94,10 @@ export default function CustomCursor() {
 
     const handleMouseDown = () => {
       setIsClicking(true);
-      // Trigger state change on click
-      setState((prev) => {
-        const next = prev === 'triggered' ? 'active' : prev === 'loading' ? 'triggered' : 'loading';
-        setIsTriggered(true);
-        setTimeout(() => setIsTriggered(false), 300); // Reset triggered state after 300ms
-        return next;
-      });
+      // Trigger state change on click by advancing the cycle
+      setState();
+      setIsTriggered(true);
+      setTimeout(() => setIsTriggered(false), 300); // Reset triggered state after 300ms
     };
 
     const handleMouseUp = () => setIsClicking(false);
@@ -137,18 +135,15 @@ export default function CustomCursor() {
     };
   }, [cursorX, cursorY, isVisible, state, setState]);
 
-  // Auto-cycle states for demo purposes (can be removed in production)
-  useEffect(() => {
-    if (!isLoading) {
-      const interval = setInterval(() => {
-        setState((prev) => {
-          const next = prev === 'triggered' ? 'active' : prev === 'loading' ? 'triggered' : 'loading';
-          return next;
-        });
-      }, 4000); // Change state every 4 seconds
-      return () => clearInterval(interval);
-    }
-  }, [isLoading, setState]);
+   // Auto-cycle states for demo purposes (can be removed in production)
+   useEffect(() => {
+     if (!isLoading) {
+       const interval = setInterval(() => {
+         setState(); // Advance the cycle by calling without parameters
+       }, 4000); // Change state every 4 seconds
+       return () => clearInterval(interval);
+     }
+   }, [isLoading, setState]);
 
   if (typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches === false) {
     return null;

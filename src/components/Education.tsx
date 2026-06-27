@@ -6,7 +6,7 @@ import {
   GraduationCap, Award, BookOpen, Trophy,
   ExternalLink, Terminal, Star, Sparkles,
   Shield, Code2, Server, Globe, Cloud, Lock,
-  Database, Micronet, Zap, Activity
+  Database, Zap, Activity, Brain
 } from "lucide-react";
 import { cybersecurityCertifications } from "@/lib/config";
 
@@ -159,7 +159,7 @@ const getCertIcon = (name: string) => {
     case "CEH": return Shield;
     case "CISSP": return Lock;
     case "Security+": return Shield;
-    case "CCNP Security": return Micronet;
+    case "CCNP Security": return Server; // Using Server as CCNP Security icon alternative
     case "Fortinet NSE": return Zap;
     default: return Shield;
   }
@@ -219,7 +219,7 @@ export default function Education() {
 const stats = [
   { label: "Certifications", value: allCertifications.length, icon: Award },
   { label: "Verified", value: allCertifications.filter(c => c.verified).length, icon: Trophy },
-  { label: "In Progress", value: allCertifications.filter(c => c.credentialId.includes("XXXXX")).length, icon: BookOpen },
+   { label: "In Progress", value: allCertifications.filter(c => c.credentialId && c.credentialId.includes("XXXXX")).length, icon: BookOpen },
 ];
 
   return (

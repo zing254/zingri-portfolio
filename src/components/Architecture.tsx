@@ -1,409 +1,309 @@
 "use client";
 
+import { useCallback, useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
-import { 
-  Server, Terminal, Shield, Cloud, Brain, 
-  Code, GitBranch, Zap, Activity, Monitor,
-  Cpu, Database, Lock, Globe
+import {
+  ReactFlow,
+  Background,
+  Controls,
+  MiniMap,
+  Node,
+  Edge,
+  NodeProps,
+  useNodesState,
+  useEdgesState,
+  MarkerType,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import {
+  Cpu,
+  Cloud,
+  Shield,
+  Server,
+  Database,
+  ArrowRight,
+  Network,
+  Lock,
+  Activity,
+  Layers,
+  Zap,
+  GitBranch,
 } from "lucide-react";
 
-const architectureSkills = [
-  { name: "Microservices Architecture", level: 92, years: 5 },
-  { name: "Event-Driven Systems", level: 88, years: 4 },
-  { name: "Serverless Architecture", level: 85, years: 3 },
-  { name: "Cloud Architecture (AWS/Azure/GCP)", level: 90, years: 5 },
-  { name: "Container Orchestration (K8s)", level: 88, years: 4 },
-  { name: "Infrastructure as Code (Terraform)", level: 85, years: 3 },
-  { name: "API Design (REST/GraphQL/gRPC)", level: 90, years: 4 },
-  { name: "Message Queues (Kafka/RabbitMQ)", level: 80, years: 3 },
-  { name: "Service Mesh (Istio/Linkerd)", level: 75, years: 2 },
-  { name: "Domain-Driven Design (DDD)", level: 82, years: 3 },
-  { name: "CQRS & Event Sourcing", level: 78, years: 3 },
-  { name: "Performance Engineering", level: 85, years: 4 },
-  { name: "Security Architecture", level: 88, years: 4 },
-  { name: "Data Architecture & Modeling", level: 80, years: 4 },
-  { name: "API Gateway & Management", level: 82, years: 3 }
-];
+interface ArchitecturePattern {
+  id: string;
+  label: string;
+  icon: React.ElementType;
+  description: string;
+  nodes: Node[];
+  edges: Edge[];
+}
 
-const architectureProjects = [
-  {
-    id: 1,
-    name: "Global Financial Platform Modernization",
-    tagline: "Microservices Migration for Banking System",
-    description: "Led the architectural transformation of a legacy monolithic banking platform to a cloud-native microservices architecture on AWS, serving 2M+ customers across 15 countries with 99.99% uptime.",
-    category: "Architecture",
-    tech: ["AWS", "Microservices", "Docker", "Kubernetes", "API Gateway", "Lambda", "DynamoDB", "SNS/SQS", "CloudFront", "Terraform"],
-    color: "primary",
-    gradient: "from-primary/20 to-primary/5",
-    icon: Server,
-    status: "Live",
-    link: "https://example.com", // Replace with actual URL
-    github: "https://github.com/username/repo", // Replace with actual URL
-    stars: 0, // Enterprise project
-    featured: true
+const nodeTypes = {
+  serviceNode: ({ data }: NodeProps) => {
+    const d = data as { label: string; icon?: React.ElementType; tech?: string[] };
+    return (
+    <div className="px-4 py-3 rounded-xl glass border border-primary/30 bg-surface/90 shadow-lg shadow-primary/10 min-w-[140px] cursor-pointer hover:border-accent/50 transition-all group">
+      <div className="flex items-center gap-2">
+        {d.icon && <d.icon className="w-4 h-4 text-primary" />}
+        <span className="text-xs font-bold font-mono text-white">{d.label}</span>
+      </div>
+      {d.tech && (
+        <div className="mt-1.5 flex flex-wrap gap-1">
+          {d.tech.slice(0, 3).map((t: string) => (
+            <span key={t} className="text-[8px] px-1.5 py-0.5 rounded bg-white/5 text-muted font-mono">
+              {t}
+            </span>
+          ))}
+        </div>
+      )}
+      <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-accent opacity-0 group-hover:opacity-100 transition-opacity shadow-[0_0_6px_#39ff14]" />
+    </div>
+    );
   },
-  {
-    id: 2,
-    name: "IoT Analytics Platform for Smart Cities",
-    tagline: "Real-time Event Processing Architecture",
-    description: "Designed a scalable event-driven architecture processing data from 500K+ IoT sensors across smart city infrastructure, enabling real-time analytics and predictive maintenance for municipal services.",
-    category: "Architecture",
-    tech: ["Azure", "Event Hubs", "Stream Analytics", "Functions", "Cosmos DB", "Power BI", "Kubernetes", "Terraform"],
-    color: "secondary",
-    gradient: "from-secondary/20 to-secondary/5",
-    icon: Zap,
-    status: "Live",
-    link: "https://example.com", // Replace with actual URL
-    github: "https://github.com/username/repo", // Replace with actual URL
-    stars: 0, // Enterprise project
-    featured: true
-  },
-  {
-    id: 3,
-    name: "Healthcare Data Exchange Platform",
-    tagline: "FHIR-compliant Health Information Exchange",
-    description: "Architected a secure, interoperable health information exchange platform enabling seamless sharing of patient records between hospitals, clinics, and insurance providers while maintaining HIPAA compliance.",
-    category: "Architecture",
-    tech: ["FHIR Servers", "API Management", "OAuth2/OIDC", "PostgreSQL", "Redis", "Kafka", "Elasticsearch", "Kubernetes", "Vault"],
-    color: "accent",
-    gradient: "from-accent/20 to-accent/5",
-    icon: Shield,
-    status: "Live",
-    link: "https://example.com", // Replace with actual URL
-    github: "https://github.com/username/repo", // Replace with actual URL
-    stars: 0, // Enterprise project
-    featured: false
-  }
-];
+};
+
+const microservices: ArchitecturePattern = {
+  id: "microservices",
+  label: "Microservices",
+  icon: Layers,
+  description: "Decoupled, independently deployable services communicating via APIs and message queues.",
+  nodes: [
+    { id: "gateway", type: "serviceNode", position: { x: 250, y: 0 }, data: { label: "API Gateway", icon: Network, tech: ["Kong", "Nginx"] } },
+    { id: "auth", type: "serviceNode", position: { x: 0, y: 120 }, data: { label: "Auth Service", icon: Lock, tech: ["JWT", "OAuth2"] } },
+    { id: "users", type: "serviceNode", position: { x: 180, y: 120 }, data: { label: "User Service", icon: Server, tech: ["Node.js"] } },
+    { id: "payments", type: "serviceNode", position: { x: 360, y: 120 }, data: { label: "Payment Service", icon: Cpu, tech: ["Stripe"] } },
+    { id: "notify", type: "serviceNode", position: { x: 540, y: 120 }, data: { label: "Notification", icon: Activity, tech: ["WebSocket"] } },
+    { id: "queue", type: "serviceNode", position: { x: 250, y: 240 }, data: { label: "Message Queue", icon: GitBranch, tech: ["RabbitMQ"] } },
+    { id: "db1", type: "serviceNode", position: { x: 80, y: 350 }, data: { label: "Users DB", icon: Database, tech: ["PostgreSQL"] } },
+    { id: "db2", type: "serviceNode", position: { x: 250, y: 350 }, data: { label: "Payments DB", icon: Database, tech: ["MongoDB"] } },
+    { id: "cache", type: "serviceNode", position: { x: 420, y: 350 }, data: { label: "Cache Layer", icon: Database, tech: ["Redis"] } },
+  ],
+  edges: [
+    { id: "e-gw-auth", source: "gateway", target: "auth", animated: true, style: { stroke: "#a855f7", strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#a855f7" } },
+    { id: "e-gw-users", source: "gateway", target: "users", animated: true, style: { stroke: "#00d4ff", strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#00d4ff" } },
+    { id: "e-gw-pay", source: "gateway", target: "payments", animated: true, style: { stroke: "#00d4ff", strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#00d4ff" } },
+    { id: "e-gw-notify", source: "gateway", target: "notify", animated: true, style: { stroke: "#00d4ff", strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#00d4ff" } },
+    { id: "e-pay-queue", source: "payments", target: "queue", style: { stroke: "#39ff14", strokeWidth: 1.5, strokeDasharray: "5 5" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#39ff14" } },
+    { id: "e-queue-notify", source: "queue", target: "notify", style: { stroke: "#39ff14", strokeWidth: 1.5, strokeDasharray: "5 5" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#39ff14" } },
+    { id: "e-users-db", source: "users", target: "db1", style: { stroke: "#888", strokeWidth: 1.5 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#888" } },
+    { id: "e-pay-db", source: "payments", target: "db2", style: { stroke: "#888", strokeWidth: 1.5 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#888" } },
+    { id: "e-gw-cache", source: "gateway", target: "cache", style: { stroke: "#888", strokeWidth: 1.5, strokeDasharray: "3 3" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#888" } },
+  ],
+};
+
+const securityArch: ArchitecturePattern = {
+  id: "security",
+  label: "Security Architecture",
+  icon: Shield,
+  description: "Defense-in-depth architecture with layered security controls and monitoring.",
+  nodes: [
+    { id: "waf", type: "serviceNode", position: { x: 250, y: 0 }, data: { label: "WAF", icon: Shield, tech: ["Cloudflare"] } },
+    { id: "lb", type: "serviceNode", position: { x: 250, y: 100 }, data: { label: "Load Balancer", icon: Network, tech: ["HAProxy"] } },
+    { id: "ids", type: "serviceNode", position: { x: 80, y: 200 }, data: { label: "IDS/IPS", icon: Activity, tech: ["Snort"] } },
+    { id: "app", type: "serviceNode", position: { x: 250, y: 200 }, data: { label: "App Servers", icon: Server, tech: ["Docker"] } },
+    { id: "honeypot", type: "serviceNode", position: { x: 420, y: 200 }, data: { label: "Honeypot", icon: Cpu, tech: ["Decoy"] } },
+    { id: "siem", type: "serviceNode", position: { x: 80, y: 320 }, data: { label: "SIEM", icon: Activity, tech: ["Splunk"] } },
+    { id: "db", type: "serviceNode", position: { x: 250, y: 320 }, data: { label: "Encrypted DB", icon: Database, tech: ["AES-256"] } },
+    { id: "vault", type: "serviceNode", position: { x: 420, y: 320 }, data: { label: "Secrets Vault", icon: Lock, tech: ["HashiCorp"] } },
+    { id: "fw", type: "serviceNode", position: { x: 250, y: -100 }, data: { label: "Firewall", icon: Shield, tech: ["iptables"] } },
+  ],
+  edges: [
+    { id: "s-fw-waf", source: "fw", target: "waf", animated: true, style: { stroke: "#39ff14", strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#39ff14" } },
+    { id: "s-waf-lb", source: "waf", target: "lb", animated: true, style: { stroke: "#00d4ff", strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#00d4ff" } },
+    { id: "s-lb-ids", source: "lb", target: "ids", style: { stroke: "#a855f7", strokeWidth: 1.5 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#a855f7" } },
+    { id: "s-lb-app", source: "lb", target: "app", style: { stroke: "#00d4ff", strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#00d4ff" } },
+    { id: "s-lb-honey", source: "lb", target: "honeypot", style: { stroke: "#888", strokeWidth: 1.5, strokeDasharray: "5 5" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#888" } },
+    { id: "s-ids-siem", source: "ids", target: "siem", style: { stroke: "#a855f7", strokeWidth: 1.5 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#a855f7" } },
+    { id: "s-app-db", source: "app", target: "db", style: { stroke: "#888", strokeWidth: 1.5 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#888" } },
+    { id: "s-app-vault", source: "app", target: "vault", style: { stroke: "#a855f7", strokeWidth: 1, strokeDasharray: "3 3" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#a855f7" } },
+    { id: "s-siem-fw", source: "siem", target: "fw", style: { stroke: "#39ff14", strokeWidth: 1, strokeDasharray: "4 4" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#39ff14" } },
+  ],
+};
+
+const eventDriven: ArchitecturePattern = {
+  id: "event-driven",
+  label: "Event-Driven",
+  icon: Zap,
+  description: "Asynchronous communication via event bus, enabling decoupled and scalable processing.",
+  nodes: [
+    { id: "producer1", type: "serviceNode", position: { x: 0, y: 50 }, data: { label: "Web App", icon: Server, tech: ["React"] } },
+    { id: "producer2", type: "serviceNode", position: { x: 0, y: 180 }, data: { label: "Mobile App", icon: Cpu, tech: ["React Native"] } },
+    { id: "producer3", type: "serviceNode", position: { x: 0, y: 310 }, data: { label: "IoT Device", icon: Activity, tech: ["MQTT"] } },
+    { id: "eventbus", type: "serviceNode", position: { x: 250, y: 180 }, data: { label: "Event Bus", icon: GitBranch, tech: ["Kafka"] } },
+    { id: "consumer1", type: "serviceNode", position: { x: 500, y: 50 }, data: { label: "Analytics", icon: Activity, tech: ["Spark"] } },
+    { id: "consumer2", type: "serviceNode", position: { x: 500, y: 180 }, data: { label: "Email Service", icon: Server, tech: ["Node.js"] } },
+    { id: "consumer3", type: "serviceNode", position: { x: 500, y: 310 }, data: { label: "Audit Logger", icon: Database, tech: ["Elasticsearch"] } },
+    { id: "dlq", type: "serviceNode", position: { x: 250, y: 350 }, data: { label: "Dead Letter Q", icon: Shield, tech: ["SQS"] } },
+  ],
+  edges: [
+    { id: "ed-p1-bus", source: "producer1", target: "eventbus", animated: true, style: { stroke: "#00d4ff", strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#00d4ff" } },
+    { id: "ed-p2-bus", source: "producer2", target: "eventbus", animated: true, style: { stroke: "#a855f7", strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#a855f7" } },
+    { id: "ed-p3-bus", source: "producer3", target: "eventbus", animated: true, style: { stroke: "#39ff14", strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#39ff14" } },
+    { id: "ed-bus-c1", source: "eventbus", target: "consumer1", style: { stroke: "#00d4ff", strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#00d4ff" } },
+    { id: "ed-bus-c2", source: "eventbus", target: "consumer2", style: { stroke: "#a855f7", strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#a855f7" } },
+    { id: "ed-bus-c3", source: "eventbus", target: "consumer3", style: { stroke: "#39ff14", strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#39ff14" } },
+    { id: "ed-bus-dlq", source: "eventbus", target: "dlq", style: { stroke: "#ff6b35", strokeWidth: 1.5, strokeDasharray: "5 5" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#ff6b35" } },
+  ],
+};
+
+const serverless: ArchitecturePattern = {
+  id: "serverless",
+  label: "Serverless",
+  icon: Cloud,
+  description: "Cloud-native architecture with auto-scaling functions and managed services.",
+  nodes: [
+    { id: "cdn", type: "serviceNode", position: { x: 0, y: 0 }, data: { label: "CDN", icon: Cloud, tech: ["Cloudflare"] } },
+    { id: "apigw", type: "serviceNode", position: { x: 250, y: 0 }, data: { label: "API Gateway", icon: Network, tech: ["AWS API GW"] } },
+    { id: "auth", type: "serviceNode", position: { x: 250, y: 100 }, data: { label: "Cognito Auth", icon: Lock, tech: ["JWT"] } },
+    { id: "fn1", type: "serviceNode", position: { x: 80, y: 200 }, data: { label: "Users Lambda", icon: Cpu, tech: ["Node.js"] } },
+    { id: "fn2", type: "serviceNode", position: { x: 250, y: 200 }, data: { label: "Orders Lambda", icon: Cpu, tech: ["Python"] } },
+    { id: "fn3", type: "serviceNode", position: { x: 420, y: 200 }, data: { label: "Process Lambda", icon: Cpu, tech: ["Go"] } },
+    { id: "dynamo", type: "serviceNode", position: { x: 80, y: 320 }, data: { label: "DynamoDB", icon: Database, tech: ["NoSQL"] } },
+    { id: "s3", type: "serviceNode", position: { x: 250, y: 320 }, data: { label: "S3 Storage", icon: Database, tech: ["Objects"] } },
+    { id: "sqs", type: "serviceNode", position: { x: 420, y: 320 }, data: { label: "SQS Queue", icon: GitBranch, tech: ["Async"] } },
+  ],
+  edges: [
+    { id: "sl-cdn-gw", source: "cdn", target: "apigw", animated: true, style: { stroke: "#00d4ff", strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#00d4ff" } },
+    { id: "sl-gw-auth", source: "apigw", target: "auth", style: { stroke: "#a855f7", strokeWidth: 1.5 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#a855f7" } },
+    { id: "sl-gw-fn1", source: "apigw", target: "fn1", style: { stroke: "#00d4ff", strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#00d4ff" } },
+    { id: "sl-gw-fn2", source: "apigw", target: "fn2", style: { stroke: "#00d4ff", strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#00d4ff" } },
+    { id: "sl-gw-fn3", source: "apigw", target: "fn3", style: { stroke: "#00d4ff", strokeWidth: 2 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#00d4ff" } },
+    { id: "sl-fn1-db", source: "fn1", target: "dynamo", style: { stroke: "#888", strokeWidth: 1.5 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#888" } },
+    { id: "sl-fn2-s3", source: "fn2", target: "s3", style: { stroke: "#888", strokeWidth: 1.5 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#888" } },
+    { id: "sl-fn3-sqs", source: "fn3", target: "sqs", style: { stroke: "#888", strokeWidth: 1.5, strokeDasharray: "4 4" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#888" } },
+    { id: "sl-auth-fn1", source: "auth", target: "fn1", style: { stroke: "#a855f7", strokeWidth: 1, strokeDasharray: "3 3" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#a855f7" } },
+  ],
+};
+
+const patterns = [microservices, securityArch, eventDriven, serverless];
 
 export default function Architecture() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [activeFilter, setActiveFilter] = useState("All");
-  const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [activePattern, setActivePattern] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
-  const categories = ["All", "Cloud", "Microservices", "Event-Driven", "Security"];
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  const filteredProjects = architectureProjects.filter(
-    p => activeFilter === "All" || 
-         (activeFilter === "Cloud" && p.tech.some(t => ["AWS", "Azure", "GCP", "Cloud"].some(c => t.includes(c)))) ||
-         (activeFilter === "Microservices" && p.tech.some(t => t === "Microservices")) ||
-          (activeFilter === "Event-Driven" && p.tech.some(t => ["Event", "Stream", "Kafka", "RabbitMQ"].some(e => t.includes(e)))) ||
-           (activeFilter === "Security" && p.tech.some(t => ["Security", "OAuth", "Vault", "Encryption"].some(s => t.includes(s))))
-   );
-  const containerVariants = {
-      hidden: { opacity: 0 },
-      visible: {
-        opacity: 1,
-        transition: { staggerChildren: 0.1, delayChildren: 0.1 }
-      }
-    }
+  const pattern = patterns[activePattern];
 
-   return (
-     <section id="architecture" ref={ref} className="relative py-32 overflow-hidden">
-      {/* Background */}
+  return (
+    <section id="architecture" ref={ref} className="relative py-32 overflow-hidden">
       <div className="absolute inset-0 grid-bg" />
-      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full blur-[180px] bg-secondary/5" />
-      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full blur-[150px] bg-primary/5" />
+      <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full blur-[180px] bg-secondary/5" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-secondary/30 mb-6">
-            <span className="text-xs font-mono text-secondary/80">cat architecture.json</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-primary/30 mb-6">
+            <span className="text-xs font-mono text-primary/80">cat architecture.sh</span>
           </div>
           <h2 className="font-heading text-5xl md:text-6xl font-bold mb-4">
             <span className="text-white">System </span>
-            <span className="glow-text-secondary text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">
+            <span className="glow-text-primary text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
               Architecture
             </span>
           </h2>
           <p className="text-muted max-w-2xl mx-auto">
-            Designing scalable, resilient systems that drive business success through thoughtful architecture and engineering excellence.
+            Architectural patterns I design and implement for scalable, secure systems.
           </p>
-          <div className="w-24 h-1 mx-auto mt-6 rounded-full bg-gradient-to-r from-secondary via-primary to-accent"
-               style={{ boxShadow: "0 0 20px var(--secondary)" }} />
+          <div className="w-24 h-1 mx-auto mt-6 rounded-full bg-gradient-to-r from-primary via-secondary to-accent"
+               style={{ boxShadow: "0 0 20px var(--primary)" }} />
         </motion.div>
 
-        {/* Filter tabs */}
+        <div className="flex flex-wrap justify-center gap-3 mb-8">
+          {patterns.map((p, i) => (
+            <button
+              key={p.id}
+              onClick={() => setActivePattern(i)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono transition-all ${
+                activePattern === i
+                  ? "bg-primary/20 text-primary border border-primary/40 shadow-[0_0_15px_rgba(0,212,255,0.2)]"
+                  : "glass border border-white/10 text-muted hover:text-white hover:border-primary/30"
+              }`}
+            >
+              <p.icon className="w-3.5 h-3.5" />
+              <span>{p.label}</span>
+            </button>
+          ))}
+        </div>
+
+        <motion.p
+          key={pattern.id}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-xs text-muted font-mono text-center mb-6"
+        >
+          {pattern.description}
+        </motion.p>
+
+        <motion.div
+          key={pattern.id}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+          className="glass rounded-2xl border border-primary/20 overflow-hidden"
+          style={{ height: 480 }}
+        >
+          {mounted && (
+            <ReactFlow
+              nodes={pattern.nodes}
+              edges={pattern.edges}
+              nodeTypes={nodeTypes}
+              fitView
+              fitViewOptions={{ padding: 0.3 }}
+              minZoom={0.3}
+              maxZoom={2}
+              panOnDrag
+              zoomOnScroll
+              nodesDraggable={false}
+              nodesConnectable={false}
+              elementsSelectable={false}
+              className="bg-[#030303]"
+            >
+              <Background color="rgba(0,212,255,0.05)" gap={24} />
+              <Controls
+                className="glass rounded-lg border border-white/10 [&_button]:text-white [&_button]:hover:bg-white/10"
+              />
+              <MiniMap
+                nodeColor="rgba(0,212,255,0.3)"
+                maskColor="rgba(0,0,0,0.7)"
+                className="glass rounded-lg border border-white/10"
+              />
+            </ReactFlow>
+          )}
+        </motion.div>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="flex flex-wrap justify-center gap-3 mb-12"
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4"
         >
-          <div className="flex items-center gap-2 mr-4 text-muted">
-            <Server className="w-4 h-4" />
-            <span className="text-xs font-mono">focus:</span>
-          </div>
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setActiveFilter(category)}
-              className={`
-                relative px-4 py-2 rounded-lg font-mono text-sm transition-all duration-300
-                ${activeFilter === category
-                  ? 'bg-secondary/20 text-secondary border border-secondary/50'
-                  : 'glass border border-white/5 hover:border-white/20 text-muted hover:text-white'
-                }
-              `}
-            >
-              {category}
-              {activeFilter === category && (
-                <motion.div
-                  layoutId="activeFilter"
-                  className="absolute inset-0 bg-secondary/10 rounded-lg -z-10"
-                />
-              )}
-            </button>
+          {[
+            { label: "Patterns", value: "4+" },
+            { label: "Services per Pattern", value: "8-12" },
+            { label: "Years Experience", value: "7+" },
+            { label: "Systems Architected", value: "15+" },
+          ].map((stat, i) => (
+            <div key={i} className="p-4 rounded-xl glass border border-white/5 text-center">
+              <p className="font-heading text-2xl font-bold text-primary">{stat.value}</p>
+              <p className="text-xs text-muted font-mono">{stat.label}</p>
+            </div>
           ))}
-        </motion.div>
-
-        {/* Skills Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-16"
-        >
-          <div className="flex items-center gap-4 mb-6">
-            <Terminal className="w-4 h-4 text-muted" />
-            <span className="text-xs font-mono text-muted">ARCH_SKILLS</span>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {architectureSkills.map((skill, index) => (
-              <motion.div
-                key={skill.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
-                className="flex items-center gap-4 p-4 rounded-xl glass border border-white/5"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`p-3 rounded-xl bg-secondary/10`}>
-                    <Server className={`w-5 h-5 text-secondary`} />
-                  </div>
-                  <div>
-                    <h3 className="font-heading font-bold text-white">{skill.name}</h3>
-                    <p className="text-xs text-muted">{skill.level}% • {skill.years}y</p>
-                  </div>
-                </div>
-                <div className="h-2 rounded-full bg-white/5 overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${skill.level}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1, delay: index * 0.05, ease: [0.25, 0.1, 0.25, 1] }}
-                    className={`h-full rounded-full relative bg-gradient-to-r from-secondary to-purple-300`}
-                    style={{ 
-                      boxShadow: `0 0 10px var(--secondary)` 
-                    }}
-                  />
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Projects grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {filteredProjects.map((project) => (
-            <motion.div
-              key={project.id}
-              variants={itemVariants}
-              onHoverStart={() => setHoveredId(project.id)}
-              onHoverEnd={() => setHoveredId(null)}
-              className="group relative"
-            >
-              {/* Glow effect */}
-              <div className={`absolute inset-0 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
-                project.color === 'primary' ? 'bg-primary/20' :
-                project.color === 'secondary' ? 'bg-secondary/20' :
-                project.color === 'accent' ? 'bg-accent/20' :
-                'bg-warning/20'
-              }`} />
-
-              <div className={`
-                relative h-full p-6 rounded-2xl glass border overflow-hidden
-                transition-all duration-500
-                ${hoveredId === project.id ? 'border-primary/50 scale-[1.02]' : 'border-white/5'}
-              `}>
-                {/* Gradient overlay */}
-                <div className={`absolute inset-0 bg-gradient-to-b ${project.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-
-                <div className="relative z-10 flex flex-col h-full">
-                  {/* Header */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className={`p-3 rounded-xl ${
-                      project.color === 'primary' ? 'bg-primary/10' :
-                      project.color === 'secondary' ? 'bg-secondary/10' :
-                      project.color === 'accent' ? 'bg-accent/10' :
-                      'bg-warning/10'
-                    }`}>
-                      <project.icon className={`w-6 h-6 ${
-                        project.color === 'primary' ? 'text-primary' :
-                        project.color === 'secondary' ? 'text-secondary' :
-                        project.color === 'accent' ? 'text-accent' :
-                        'text-warning'
-                      }`} />
-                    </div>
-                    
-                    <div className="flex items-center gap-3">
-                      {project.stars > 0 && (
-                        <div className="flex items-center gap-1 text-xs text-warning">
-                          <Star className="w-3 h-3 fill-warning" />
-                          <span className="font-mono">{project.stars}</span>
-                        </div>
-                      )}
-                      <span className={`px-2 py-1 rounded text-xs font-mono ${
-                        project.status === 'Live' ? 'bg-accent/10 text-accent' :
-                        project.status === 'Beta' ? 'bg-warning/10 text-warning' :
-                        'bg-muted/10 text-muted'
-                      }`}>
-                        {project.status}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Content */}
-                  <h3 className="font-heading text-xl font-bold mb-1 text-white group-hover:text-primary transition-colors">
-                    {project.name}
-                  </h3>
-                  <p className="text-xs font-mono mb-3" style={{
-                    color: project.color === 'primary' ? 'var(--primary)' :
-                           project.color === 'secondary' ? 'var(--secondary)' :
-                           project.color === 'accent' ? 'var(--accent)' :
-                           'var(--warning)'
-                  }}>
-                    {project.tagline}
-                  </p>
-                  <p className="text-sm text-gray-400 mb-4 flex-grow leading-relaxed">
-                    {project.description}
-                  </p>
-
-                  {/* Tech stack */}
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.tech.slice(0, 4).map((tech) => (
-                      <span key={tech} className="px-2 py-1 rounded text-xs font-mono glass border border-white/5">
-                        {tech}
-                      </span>
-                    ))}
-                    {project.tech.length > 4 && (
-                      <span className="px-2 py-1 rounded text-xs font-mono text-muted">
-                        +{project.tech.length - 4}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Links */}
-                  <div className="flex items-center gap-4 pt-4 border-t border-white/5">
-                    <a
-                      href={project.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`flex items-center gap-2 text-sm font-mono transition-colors ${
-                        project.color === 'primary' ? 'text-primary hover:text-primary/80' :
-                        project.color === 'secondary' ? 'text-secondary hover:text-secondary/80' :
-                        project.color === 'accent' ? 'text-accent hover:text-accent/80' :
-                        'text-warning hover:text-warning/80'
-                      }`}
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      <span>Live Demo</span>
-                    </a>
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm font-mono text-muted hover:text-white transition-colors"
-                    >
-                      <Github className="w-4 h-4" />
-                      <span>Code</span>
-                    </a>
-                    
-                    <div className="flex-grow" />
-                    
-                    <motion.div
-                      style={{ 
-                        transform: `translateX(${hoveredId === project.id ? 0 : 4}px)`,
-                        transition: 'transform 0.2s'
-                      }}
-                      className={`flex items-center gap-1 text-sm font-mono ${
-                        project.color === 'primary' ? 'text-primary' :
-                        project.color === 'secondary' ? 'text-secondary' :
-                        project.color === 'accent' ? 'text-accent' :
-                        'text-warning'
-                      `}>
-                    >
-                      <span className="text-xs">View</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </motion.div>
-                  </div>
-
-                  {/* Featured badge */}
-                  {project.featured && (
-                    <div className="absolute top-4 right-4">
-                      <div className="px-2 py-1 rounded bg-warning/10 border border-warning/30">
-                        <span className="text-xs font-mono text-warning">Featured</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Corner decoration */}
-                  <div className={`absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 rounded-br-xl ${
-                    project.color === 'primary' ? 'border-primary/20' :
-                    project.color === 'secondary' ? 'border-secondary/20' :
-                    project.color === 'accent' ? 'border-accent/20' :
-                    'border-warning/20'
-                  }`} />
-                </div>
-              </div>
-              </motion.div>
-          ))}
-        </motion.div>
-
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-16 text-center"
-        >
-          <div className="inline-flex items-center gap-4 p-6 rounded-2xl glass border border-secondary/20">
-            <Terminal className="w-5 h-5 text-secondary" />
-            <span className="text-muted font-mono text-sm">More architecture designs on GitHub</span>
-            <motion.a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.05 }}
-              className="px-4 py-2 rounded-lg bg-secondary/10 border border-secondary/30 text-secondary font-mono text-sm hover:bg-secondary/20 transition-colors"
-            >
-              View All →
-            </motion.a>
-          </div>
         </motion.div>
       </div>
 
-      {/* Bottom separator */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-secondary/50 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
     </section>
   );
 }

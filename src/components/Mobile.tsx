@@ -4,7 +4,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { 
   Monitor, Smartphone, Terminal, GitBranch, 
-  Code, Zap, Shield, Cloud
+  Code, Zap, Shield, Cloud, Star, ExternalLink, Github, ArrowRight
 } from "lucide-react";
 
 const mobileSkills = [
