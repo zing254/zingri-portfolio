@@ -8,6 +8,7 @@ import {
   GitBranch, Monitor, Zap, Activity
 } from "lucide-react";
 import { cybersecuritySkills } from "@/lib/config";
+import { getColorClasses } from "@/lib/tailwind-helpers";
 
 const skillCategories = [
   {
@@ -223,12 +224,9 @@ export default function Skills() {
             >
               <div className="flex items-center gap-2">
                  <category.icon className={`w-4 h-4 ${
-                   category.color === 'primary' ? 'text-primary' :
-                   category.color === 'secondary' ? 'text-secondary' :
-                   category.color === 'accent' ? 'text-accent' :
-                   category.color === 'warning' ? 'text-warning' :
                    category.color === 'purple' ? 'text-purple-500' :
-                   'text-pink-500'
+                   category.color === 'pink' ? 'text-pink-500' :
+                   getColorClasses(category.color).text
                  }`} />
                 <span className="hidden sm:inline">{category.name}</span>
               </div>
@@ -264,11 +262,9 @@ export default function Skills() {
                     <div className="flex items-center gap-3">
                       <div className={`p-3 rounded-xl bg-gradient-to-br ${category.gradient} border ${category.borderColor}`}>
                         <category.icon className={`w-6 h-6 ${
-                          category.color === 'primary' ? 'text-primary' :
-                          category.color === 'secondary' ? 'text-secondary' :
-                          category.color === 'accent' ? 'text-accent' :
-                          category.color === 'warning' ? 'text-warning' :
-                          'text-pink-500'
+                          category.color === 'purple' ? 'text-purple-500' :
+                          category.color === 'pink' ? 'text-pink-500' :
+                          getColorClasses(category.color).text
                         }`} />
                       </div>
                       <div>
@@ -295,11 +291,12 @@ export default function Skills() {
                             viewport={{ once: true }}
                             transition={{ duration: 1, delay: index * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
                             className={`h-full rounded-full relative ${
+                              category.color === 'purple' ? 'bg-gradient-to-r from-purple-500 to-purple-300' :
+                              category.color === 'pink' ? 'bg-gradient-to-r from-pink-500 to-rose-300' :
                               category.color === 'primary' ? 'bg-gradient-to-r from-primary to-cyan-300' :
                               category.color === 'secondary' ? 'bg-gradient-to-r from-secondary to-purple-300' :
                               category.color === 'accent' ? 'bg-gradient-to-r from-accent to-green-300' :
-                              category.color === 'warning' ? 'bg-gradient-to-r from-warning to-orange-300' :
-                              'bg-gradient-to-r from-pink-500 to-rose-300'
+                              'bg-gradient-to-r from-warning to-orange-300'
                             }`}
                             style={{
                               boxShadow: `0 0 10px ${
@@ -318,7 +315,14 @@ export default function Skills() {
                 </div>
 
                 {/* Corner decoration */}
-                <div className={`absolute top-0 right-0 w-16 h-16 border-${category.color === 'primary' ? 'primary' : category.color === 'secondary' ? 'secondary' : 'accent'}-500/20 border-r-2 border-t-2 rounded-tr-2xl`} />
+                <div className={`absolute top-0 right-0 w-16 h-16 ${
+                  category.color === 'primary' ? 'border-primary-500/20' :
+                  category.color === 'secondary' ? 'border-secondary-500/20' :
+                  category.color === 'accent' ? 'border-accent-500/20' :
+                  category.color === 'warning' ? 'border-warning-500/20' :
+                  category.color === 'purple' ? 'border-purple-500/20' :
+                  'border-pink-500/20'
+                } border-r-2 border-t-2 rounded-tr-2xl`} />
               </motion.div>
             ))}
         </motion.div>

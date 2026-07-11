@@ -9,6 +9,7 @@ import {
   MessageSquare, User, AtSign, Phone
 } from "lucide-react";
 import { useToast } from "./Toaster";
+import { getColorClasses, fieldColorMap } from "@/lib/tailwind-helpers";
 
 const socialLinks = [
   { name: "GitHub", icon: Github, url: "https://github.com/zing254", color: "primary" },
@@ -199,13 +200,7 @@ export default function Contact() {
       
       // Helper function to get color based on field name
       const getColorForField = (fieldName: string) => {
-        switch (fieldName) {
-          case 'name': return 'primary';
-          case 'email': return 'secondary';
-          case 'subject': return 'accent';
-          case 'message': return 'primary';
-          default: return 'muted';
-        }
+        return fieldColorMap[fieldName] || 'primary';
       };
       
       // Handle value changes for filled state detection
@@ -219,14 +214,14 @@ export default function Contact() {
              {label}
            </label>
            <div className="relative">
-             {Icon && (
-               <Icon 
-                 className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 
-                   ${error ? 'text-error/80' : isFocused ? `text-${getColorForField(name)}` : 'text-muted/60'}
-                   group-hover:scale-110 transition-all duration-300 
-                   ${isFocused || isFilled ? 'scale-110' : ''}`}
-               />
-             )}
+              {Icon && (
+                <Icon 
+                  className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 
+                    ${error ? 'text-error/80' : isFocused ? getColorClasses(getColorForField(name)).text : 'text-muted/60'}
+                    group-hover:scale-110 transition-all duration-300 
+                    ${isFocused || isFilled ? 'scale-110' : ''}`}
+                />
+              )}
              <input
                type={type}
                name={name}
@@ -435,13 +430,13 @@ export default function Contact() {
                         rel="noopener noreferrer"
                         className={`
                           flex items-center gap-3 p-3 rounded-lg glass border border-white/5
-                          hover:border-${social.color}/50 transition-all duration-300 group
+                          ${getColorClasses(social.color).hoverBorder} transition-all duration-300 group
                         `}
                       >
                         <social.icon 
-                          className={`w-5 h-5 text-${social.color} 
+                          className={`w-5 h-5 ${getColorClasses(social.color).text} 
                             group-hover:scale-110 
-                            group-hover:text-${social.color}/80
+                            ${getColorClasses(social.color).groupHoverText}
                             transition-all duration-300`}
                         />
                         <span className="font-mono text-sm">{social.name}</span>
