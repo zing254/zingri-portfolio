@@ -17,10 +17,34 @@ import Leadership from "@/components/Leadership";
 import Contact from "@/components/Contact";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
-const Particles = dynamic(() => import("@/components/Particles"), { ssr: false });
-const Architecture = dynamic(() => import("@/components/Architecture"), { ssr: false });
-const TerminalSection = dynamic(() => import("@/components/TerminalSection"), { ssr: false });
-const Testimonials = dynamic(() => import("@/components/Testimonials"), { ssr: false });
+const Particles = dynamic(() => import("@/components/Particles"), {
+  ssr: false,
+  loading: () => <div className="fixed inset-0 -z-10 bg-background" />,
+});
+const Architecture = dynamic(() => import("@/components/Architecture"), {
+  ssr: false,
+  loading: () => (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-pulse text-primary/50">Loading...</div>
+    </div>
+  ),
+});
+const TerminalSection = dynamic(() => import("@/components/TerminalSection"), {
+  ssr: false,
+  loading: () => (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-pulse text-primary/50">Loading...</div>
+    </div>
+  ),
+});
+const Testimonials = dynamic(() => import("@/components/Testimonials"), {
+  ssr: false,
+  loading: () => (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-pulse text-primary/50">Loading...</div>
+    </div>
+  ),
+});
 
 
 const navItems = [
