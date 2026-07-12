@@ -25,17 +25,18 @@ function AnimatedCounter({ value, suffix, duration = 2000 }: { value: number; su
 
   useEffect(() => {
     if (!isInView) return;
-    
+    let animationFrameId: number;
     let startTime: number;
     const animate = (currentTime: number) => {
       if (!startTime) startTime = currentTime;
       const progress = Math.min((currentTime - startTime) / duration, 1);
       setCount(Math.floor(progress * value));
       if (progress < 1) {
-        requestAnimationFrame(animate);
+        animationFrameId = requestAnimationFrame(animate);
       }
     };
-    requestAnimationFrame(animate);
+    animationFrameId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrameId);
   }, [isInView, value, duration]);
 
   return <span ref={ref}>{count}{suffix}</span>;
@@ -63,7 +64,7 @@ export default function About() {
   };
 
   return (
-    <section id="about" ref={ref} className="relative py-32 overflow-hidden">
+    <section id="about" ref={ref} aria-labelledby="about-heading" className="relative py-32 overflow-hidden">
       {/* Background elements */}
       <div className="absolute inset-0 grid-bg" />
       <motion.div 
@@ -84,7 +85,7 @@ export default function About() {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-primary/30 mb-6">
             <span className="text-xs font-mono text-primary/80">cat about.txt</span>
           </div>
-          <h2 className="font-heading text-5xl md:text-6xl font-bold mb-4">
+          <h2 id="about-heading" className="font-heading text-5xl md:text-6xl font-bold mb-4">
             <span className="text-white">About </span>
             <span className="glow-text-primary text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
               Me
