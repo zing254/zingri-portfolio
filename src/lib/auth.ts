@@ -4,8 +4,8 @@ export function verifyAuth(request: Request): boolean {
   const adminSecret = process.env.ADMIN_SECRET;
 
   if (!adminSecret) {
-    console.warn('ADMIN_SECRET not configured — auth disabled');
-    return true;
+    console.error('ADMIN_SECRET not configured — denying auth for security');
+    return false;
   }
 
   const providedSecret = request.headers.get('x-admin-secret');
