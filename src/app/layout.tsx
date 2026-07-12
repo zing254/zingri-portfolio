@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ToastProvider } from "@/components/Toaster";
 import { ThemeProvider } from "@/components/ThemeToggle";
+import { siteConfig, personalInfo } from "@/lib/config";
 
 
 const inter = Inter({ 
@@ -29,55 +30,55 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://zingri.dev'),
+  metadataBase: new URL(siteConfig.url),
   title: {
-    default: "ZINGRI MASTER | CTO & Senior Full-Stack Lead",
-    template: "%s | ZINGRI MASTER"
+    default: siteConfig.title,
+    template: `%s | ${personalInfo.name}`
   },
-  description: "Senior Full-Stack Developer, DevOps Architect, and Cybersecurity Expert with OSCP & CISSP certifications. Specializing in offensive security, network defense, and secure digital ecosystems from Nairobi, Kenya 🇰🇪",
+  description: siteConfig.description,
   icons: {
     icon: "/icon.svg",
     apple: "/icon.svg",
   },
-  keywords: [
-    "Senior Full-Stack Developer", "CTO", "DevOps Architect", "Cybersecurity Expert", 
-    "OSCP Certified", "CISSP Certified", "Ethical Hacker", "Penetration Tester",
-    "Network Security Specialist", "Next.js", "TypeScript", "Python",
-    "Zingri Master", "Nairobi", "Kenya", "Offensive Security"
-  ],
-  authors: [{ name: "Zingri Master", url: "https://zingri.dev" }],
-  creator: "Zingri Master",
-  publisher: "Zingri Master",
+  keywords: siteConfig.keywords,
+  authors: [{ name: personalInfo.name, url: siteConfig.url }],
+  creator: personalInfo.name,
+  publisher: personalInfo.name,
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   openGraph: {
-    title: "ZINGRI MASTER | Senior Full-Stack Lead - OSCP & CISSP Certified",
+    title: `${personalInfo.name} | Senior Full-Stack Lead - OSCP & CISSP Certified`,
     description: "7+ years architecting secure digital ecosystems. From fintech to AI. Hire-ready for technical leadership.",
-    url: "https://zingri.dev",
-    siteName: "Zingri Master Portfolio",
+    url: siteConfig.url,
+    siteName: `${personalInfo.name} Portfolio`,
     locale: "en_US",
     type: "website",
     images: [
       {
-        url: "/og-image.svg",
+        url: siteConfig.ogImage,
         width: 1200,
         height: 630,
-        alt: "Zingri Master - Full-Stack Developer & Security Specialist"
+        alt: `${personalInfo.name} - Full-Stack Developer & Security Specialist`
       }
     ]
   },
   twitter: {
     card: "summary_large_image",
-    site: "@zingrimaster",
-    title: "ZINGRI MASTER | Senior Full-Stack Lead",
+    site: "@zingri",
+    title: `${personalInfo.name} | Senior Full-Stack Lead`,
     description: "Architecting the future with security-first engineering. OSCP & CISSP certified.",
-    creator: "@zingrimaster",
-    images: ["/og-image.svg"]
+    creator: "@zingri",
+    images: [siteConfig.ogImage]
   },
   robots: {
     index: true,
-    follow: false, // Don't follow external links for focused SEO
+    follow: true,
     googleBot: {
       index: true,
-      follow: false,
+      follow: true,
       'max-video-preview': -1,
       'max-image-preview': 'large',
       'max-snippet': -1,
