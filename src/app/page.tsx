@@ -117,6 +117,7 @@ export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
   const { scrollYProgress } = useScroll();
   const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
@@ -127,6 +128,26 @@ export default function Home() {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      { threshold: 0.5, rootMargin: '-80px 0px -50% 0px' }
+    );
+
+    navItems.forEach((item) => {
+      const element = document.getElementById(item.id);
+      if (element) observer.observe(element);
+    });
+
+    return () => observer.disconnect();
   }, []);
 
   const scrollToSection = (id: string) => {
@@ -183,6 +204,7 @@ export default function Home() {
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
+                  aria-current={activeSection === item.id ? 'true' : undefined}
                   className="px-4 py-2 rounded-lg text-sm font-mono text-muted hover:text-white hover:bg-white/5 transition-all duration-300"
                 >
                   {item.label}
@@ -205,6 +227,8 @@ export default function Home() {
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-expanded={mobileMenuOpen}
+              aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
               className="md:hidden p-2 rounded-lg hover:bg-white/5 transition-colors"
             >
               {mobileMenuOpen ? (
@@ -222,23 +246,25 @@ export default function Home() {
           animate={{ height: mobileMenuOpen ? "auto" : 0, opacity: mobileMenuOpen ? 1 : 0 }}
           className="md:hidden overflow-hidden glass border-t border-white/10"
         >
-          <div className="px-4 py-4 space-y-2">
-            {navItems.map((item) => (
+          <nav aria-label="Mobile navigation">
+            <div className="px-4 py-4 space-y-2">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  className="block w-full text-left px-4 py-3 rounded-lg text-sm font-mono text-muted hover:text-white hover:bg-white/5 transition-all"
+                >
+                  {item.label}
+                </button>
+              ))}
               <button
-                key={item.id}
-                onClick={() => scrollToSection(item.id)}
-                className="block w-full text-left px-4 py-3 rounded-lg text-sm font-mono text-muted hover:text-white hover:bg-white/5 transition-all"
+                onClick={() => scrollToSection("contact")}
+                className="w-full mt-4 px-5 py-3 rounded-lg bg-gradient-to-r from-primary to-secondary text-black font-mono text-sm font-semibold"
               >
-                {item.label}
+                Hire Me
               </button>
-            ))}
-            <button
-              onClick={() => scrollToSection("contact")}
-              className="w-full mt-4 px-5 py-3 rounded-lg bg-gradient-to-r from-primary to-secondary text-black font-mono text-sm font-semibold"
-            >
-              Hire Me
-            </button>
-          </div>
+            </div>
+          </nav>
         </motion.div>
       </motion.nav>
 
