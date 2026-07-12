@@ -92,7 +92,7 @@ export async function POST(request: Request) {
           html: `
             <div style="font-family: monospace; max-width: 600px; margin: 0 auto;">
               <div style="text-align: center; padding: 20px 0;">
-                <h1 style="color: #00ffff; font-size: 28px;">BAZENGA SYSTEMS</h1>
+                <h1 style="color: #00ffff; font-size: 28px;">ZINGRI MASTER</h1>
                 <p style="color: #39ff14;">MESSAGE RECEIVED</p>
               </div>
               <div style="background: #111; padding: 20px; border-radius: 8px;">

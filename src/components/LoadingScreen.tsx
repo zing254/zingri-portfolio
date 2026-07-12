@@ -7,7 +7,7 @@ interface LoadingScreenProps {
   onComplete?: () => void;
 }
 
-const LETTERS = 'BAZENGA'.split('');
+const LETTERS = 'ZINGRI'.split('');
 
 export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
   const [progress, setProgress] = useState(0);

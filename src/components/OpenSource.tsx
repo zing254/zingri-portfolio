@@ -478,7 +478,7 @@ export default function OpenSource() {
                   Open Source Journey
                 </h3>
                 <p className="text-gray-400 text-sm leading-relaxed">
-                  &quot;Open source is more than just code—it's about community, collaboration, and creating technology that benefits everyone. I believe in giving back to the ecosystem that has given me so much.&quot;
+                  &quot;Open source is more than just code—it&apos;s about community, collaboration, and creating technology that benefits everyone. I believe in giving back to the ecosystem that has given me so much.&quot;
                 </p>
               </div>
               <div className="flex items-center gap-3">
