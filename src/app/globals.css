@@ -223,7 +223,7 @@ html {
 /* Responsive typography */
 @media (max-width: 640px) {
   html {
-    font-size: 14px;
+    font-size: clamp(14px, 2.8vw, 16px);
   }
 }
 
