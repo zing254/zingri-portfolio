@@ -41,12 +41,18 @@ function CustomCursor() {
   const [isVisible, setIsVisible] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const rafId = useRef<number | null>(null);
 
   useEffect(() => {
     setMounted(true);
     const updatePosition = (e: MouseEvent) => {
-      setPosition({ x: e.clientX, y: e.clientY });
-      setIsVisible(true);
+      if (rafId.current !== null) {
+        cancelAnimationFrame(rafId.current);
+      }
+      rafId.current = requestAnimationFrame(() => {
+        setPosition({ x: e.clientX, y: e.clientY });
+        setIsVisible(true);
+      });
     };
 
     const handleMouseLeave = () => setIsVisible(false);
@@ -66,13 +72,16 @@ function CustomCursor() {
 
     const handleHoverEnd = () => setIsHovering(false);
 
-    window.addEventListener("mousemove", updatePosition);
-    window.addEventListener("mouseleave", handleMouseLeave);
-    window.addEventListener("mouseenter", handleMouseEnter);
+    window.addEventListener("mousemove", updatePosition, { passive: true });
+    window.addEventListener("mouseleave", handleMouseLeave, { passive: true });
+    window.addEventListener("mouseenter", handleMouseEnter, { passive: true });
     document.addEventListener("mouseover", handleHoverStart);
     document.addEventListener("mouseout", handleHoverEnd);
 
     return () => {
+      if (rafId.current !== null) {
+        cancelAnimationFrame(rafId.current);
+      }
       window.removeEventListener("mousemove", updatePosition);
       window.removeEventListener("mouseleave", handleMouseLeave);
       window.removeEventListener("mouseenter", handleMouseEnter);
@@ -87,7 +96,7 @@ function CustomCursor() {
     <div
       className={`fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference transition-transform duration-100 ${
         isVisible ? "opacity-100" : "opacity-0"
-      }`}
+      } ${isHovering ? "custom-cursor-hover" : "custom-cursor"}`}
       style={{
         transform: `translate(${position.x - (isHovering ? 20 : 8)}px, ${position.y - (isHovering ? 20 : 8)}px)`,
       }}

@@ -202,6 +202,12 @@ html {
   animation: shimmer 1.5s infinite;
 }
 
+/* Custom cursor */
+.custom-cursor,
+.custom-cursor-hover {
+  will-change: transform;
+}
+
 /* Neon line separator */
 .neon-line {
   height: 1px;
