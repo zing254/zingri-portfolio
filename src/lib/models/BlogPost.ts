@@ -13,14 +13,17 @@ export interface IBlogPost extends Document {
 
 const BlogPostSchema = new Schema<IBlogPost>(
   {
-    title: { type: String, required: true },
-    slug: { type: String, required: true, unique: true },
-    content: { type: String, required: true },
-    excerpt: { type: String, default: '' },
-    tags: { type: [String], default: [] },
+    title: { type: String, required: true, maxlength: 200 },
+    slug: { type: String, required: true, unique: true, maxlength: 200 },
+    content: { type: String, required: true, maxlength: 100000 },
+    excerpt: { type: String, default: '', maxlength: 500 },
+    tags: { type: [String], default: [], maxlength: 50 },
     published: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
+
+BlogPostSchema.index({ slug: 1 }, { unique: true });
+BlogPostSchema.index({ published: 1, createdAt: -1 });
 
 export const BlogPost = mongoose.models.BlogPost || mongoose.model<IBlogPost>('BlogPost', BlogPostSchema);

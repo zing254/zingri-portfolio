@@ -12,13 +12,15 @@ export interface IContactMessage extends Document {
 
 const ContactMessageSchema = new Schema<IContactMessage>(
   {
-    name: { type: String, required: true },
-    email: { type: String, required: true },
-    subject: { type: String, required: true },
-    message: { type: String, required: true },
+    name: { type: String, required: true, maxlength: 100 },
+    email: { type: String, required: true, maxlength: 254 },
+    subject: { type: String, required: true, maxlength: 200 },
+    message: { type: String, required: true, maxlength: 5000 },
     read: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
+
+ContactMessageSchema.index({ createdAt: -1 });
 
 export const ContactMessage = mongoose.models.ContactMessage || mongoose.model<IContactMessage>('ContactMessage', ContactMessageSchema);
