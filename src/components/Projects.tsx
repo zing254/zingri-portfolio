@@ -35,6 +35,18 @@ export default function Projects() {
   const [showModal, setShowModal] = useState(false);
   const [modalProject, setModalProject] = useState<Project | null>(null);
 
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && showModal) {
+        setShowModal(false);
+        setModalProject(null);
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [showModal]);
+
   // Fetch GitHub repositories and convert to project format
   useEffect(() => {
     const fetchProjects = async () => {
@@ -194,7 +206,7 @@ export default function Projects() {
                    <div className="relative rounded-2xl glass border border-primary/20 overflow-hidden">
                      {/* Project Image/Background */}
                      <div className="absolute inset-0">
-                       <div className="absolute inset-0 bg-gradient-to-tr {gradient} opacity-20" />
+                       <div className={`absolute inset-0 bg-gradient-to-tr ${gradient} opacity-20`} />
                        <div className="absolute inset-0 grid-opacity" />
                      </div>
                      
@@ -256,6 +268,7 @@ export default function Projects() {
                             href={project.url}
                             target="_blank"
                             rel="noopener noreferrer"
+                            aria-label={`Live demo for ${project.name} (opens in new tab)`}
                             className={`flex items-center gap-2 text-sm font-mono transition-colors ${
                               color === 'primary' ? 'text-primary hover:text-primary/80' :
                               color === 'secondary' ? 'text-secondary hover:text-secondary/80' :
@@ -273,6 +286,7 @@ export default function Projects() {
                             href={project.github}
                             target="_blank"
                             rel="noopener noreferrer"
+                            aria-label={`GitHub repository for ${project.name} (opens in new tab)`}
                             className="flex items-center gap-2 text-sm font-mono text-muted hover:text-white transition-colors"
                           >
                             <Github className="w-4 h-4" />
@@ -317,129 +331,103 @@ export default function Projects() {
                   </div>
                 </TiltCard>
                 
-                 {/* Long Description Modal Trigger */}
-                <motion.div
-                  onClick={() => {
-                    setModalProject(project);
-                    setShowModal(true);
-                  }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="cursor-pointer"
-                >
-                  {/* Long Description Modal */}
-                  {showModal && modalProject && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4 }}
-                      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
-                    >
-                      <motion.div
-                        initial={{ scale: 0.9 }}
-                        whileInView={{ scale: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.4, damping: 15 }}
-                        className="relative w-full max-w-2xl max-h-[80vh] bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden"
-                      >
-                        <div className="p-6">
-                          <h3 className="text-xl font-semibold text-white mb-4">{modalProject.name}</h3>
-                          <div className="space-y-4">
-                            <p className="text-muted">{modalProject.longDescription}</p>
-                            {modalProject.tech.length > 0 && (
-                              <div className="flex flex-wrap gap-2 mb-4">
-                                {modalProject.tech.map((tech, index) => (
-                                  <motion.span
-                                    key={index}
-                                    initial={{ opacity: 0, y: 5 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                                    className={`px-2 py-1 rounded text-xs font-mono ${
-                                      getProjectColor(modalProject.category) === 'primary' ? 'bg-primary/20 text-primary' :
-                                      getProjectColor(modalProject.category) === 'secondary' ? 'bg-secondary/20 text-secondary' :
-                                      getProjectColor(modalProject.category) === 'accent' ? 'bg-accent/20 text-accent' :
-                                      'bg-warning/20 text-warning'
-                                    }`}
-                                  >
-                                    {tech}
-                                  </motion.span>
-                                ))}
-                              </div>
-                            )}
-                            <div className="flex items-center gap-4 pt-4 border-t border-white/5">
-                              {modalProject.url && (
-                                <a
-                                  href={modalProject.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className={`flex items-center gap-2 text-sm font-mono transition-colors ${
-                                    getProjectColor(modalProject.category) === 'primary' ? 'text-primary hover:text-primary/80' :
-                                    getProjectColor(modalProject.category) === 'secondary' ? 'text-secondary hover:text-secondary/80' :
-                                    getProjectColor(modalProject.category) === 'accent' ? 'text-accent hover:text-accent/80' :
-                                    'text-warning hover:text-warning/80'
-                                  }`}
-                                >
-                                  <ExternalLink className="w-4 h-4" />
-                                  <span>Live Demo</span>
-                                </a>
-                              )}
-                              
-                              {modalProject.github && (
-                                <a
-                                  href={modalProject.github}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-2 text-sm font-mono text-muted hover:text-white transition-colors"
-                                >
-                                  <Github className="w-4 h-4" />
-                                  <span>Code</span>
-                                </a>
-                              )}
-                              
-                              <div className="flex-grow" />
-                              
-                              <motion.div
-                                animate={{ x: hoveredId === modalProject.id ? 0 : 4 }}
-                                transition={{ duration: 0.2 }}
-                                className={`flex items-center gap-1 text-sm font-mono ${
-                                  getProjectColor(modalProject.category) === 'primary' ? 'text-primary' :
-                                  getProjectColor(modalProject.category) === 'secondary' ? 'text-secondary' :
-                                  getProjectColor(modalProject.category) === 'accent' ? 'text-accent' :
-                                  'text-warning'
-                                }`}
-                              >
-                                <span className="text-xs">View</span>
-                                <ArrowRight className="w-3 h-3" />
-                              </motion.div>
-                            </div>
-                          </div>
-                          
-                          <motion.button
-                            initial={{ scale: 0.9 }}
-                            whileInView={{ scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.3 }}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => {
-                              setShowModal(false);
-                              setModalProject(null);
-                            }}
-                            className="w-full px-4 py-2 rounded-lg bg-primary/20 text-primary font-mono text-sm border border-primary/30 hover:bg-primary/30 transition-colors"
-                          >
-                            Close
-                          </motion.button>
-                        </div>
-                      </motion.div>
-                    </motion.div>
-                  )}
-                </motion.div>
               </motion.div>
             );
           })}
           
+        {/* Project Detail Modal */}
+        {showModal && modalProject && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+            onClick={() => {
+              setShowModal(false);
+              setModalProject(null);
+            }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              transition={{ duration: 0.3, damping: 15 }}
+              className="relative w-full max-w-2xl max-h-[80vh] bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6">
+                <h3 id="modal-title" className="text-xl font-semibold text-white mb-4">{modalProject.name}</h3>
+                <div className="space-y-4">
+                  <p className="text-muted">{modalProject.longDescription}</p>
+                  {modalProject.tech.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {modalProject.tech.map((tech, index) => (
+                        <span
+                          key={index}
+                          className={`px-2 py-1 rounded text-xs font-mono ${
+                            getProjectColor(modalProject.category) === 'primary' ? 'bg-primary/20 text-primary' :
+                            getProjectColor(modalProject.category) === 'secondary' ? 'bg-secondary/20 text-secondary' :
+                            getProjectColor(modalProject.category) === 'accent' ? 'bg-accent/20 text-accent' :
+                            'bg-warning/20 text-warning'
+                          }`}
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex items-center gap-4 pt-4 border-t border-white/5">
+                    {modalProject.url && (
+                      <a
+                        href={modalProject.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Live demo for ${modalProject.name} (opens in new tab)`}
+                        className={`flex items-center gap-2 text-sm font-mono transition-colors ${
+                          getProjectColor(modalProject.category) === 'primary' ? 'text-primary hover:text-primary/80' :
+                          getProjectColor(modalProject.category) === 'secondary' ? 'text-secondary hover:text-secondary/80' :
+                          getProjectColor(modalProject.category) === 'accent' ? 'text-accent hover:text-accent/80' :
+                          'text-warning hover:text-warning/80'
+                        }`}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        <span>Live Demo</span>
+                      </a>
+                    )}
+                    
+                    {modalProject.github && (
+                      <a
+                        href={modalProject.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`GitHub repository for ${modalProject.name} (opens in new tab)`}
+                        className="flex items-center gap-2 text-sm font-mono text-muted hover:text-white transition-colors"
+                      >
+                        <Github className="w-4 h-4" />
+                        <span>Code</span>
+                      </a>
+                    )}
+                  </div>
+                </div>
+                
+                <button
+                  onClick={() => {
+                    setShowModal(false);
+                    setModalProject(null);
+                  }}
+                  className="w-full mt-4 px-4 py-2 rounded-lg bg-primary/20 text-primary font-mono text-sm border border-primary/30 hover:bg-primary/30 transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
           {/* Show message when no projects match filter */}
           {filteredProjects.length === 0 && (
             <motion.div
@@ -475,6 +463,7 @@ export default function Projects() {
               href="https://github.com/zing254"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="View all projects on GitHub (opens in new tab)"
               whileHover={{ scale: 1.05 }}
               className="px-4 py-2 rounded-lg bg-primary/10 border border-primary/30 text-primary font-mono text-sm hover:bg-primary/20 transition-colors"
             >
