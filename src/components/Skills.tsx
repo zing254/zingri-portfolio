@@ -172,7 +172,7 @@ export default function Skills() {
   };
 
   return (
-    <section id="skills" ref={ref} className="relative py-32 overflow-hidden">
+    <section id="skills" ref={ref} aria-labelledby="skills-heading" className="relative py-32 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 grid-bg" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full blur-[200px] bg-primary/5" />
@@ -189,7 +189,7 @@ export default function Skills() {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-secondary/30 mb-6">
             <span className="text-xs font-mono text-secondary/80">npm list skills --depth=0</span>
           </div>
-          <h2 className="font-heading text-5xl md:text-6xl font-bold mb-4">
+          <h2 id="skills-heading" className="font-heading text-5xl md:text-6xl font-bold mb-4">
             <span className="text-white">Tech </span>
             <span className="glow-text-secondary text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">
               Stack
@@ -214,6 +214,7 @@ export default function Skills() {
             <button
               key={category.id}
               onClick={() => setActiveCategory(activeCategory === category.id ? null : category.id)}
+              aria-pressed={activeCategory === category.id}
               className={`
                 relative px-5 py-3 rounded-xl font-mono text-sm transition-all duration-300
                 ${activeCategory === category.id 
@@ -290,6 +291,10 @@ export default function Skills() {
                             whileInView={{ width: `${skill.level}%` }}
                             viewport={{ once: true }}
                             transition={{ duration: 1, delay: index * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+                            role="progressbar"
+                            aria-valuenow={skill.level}
+                            aria-valuemin={0}
+                            aria-valuemax={100}
                             className={`h-full rounded-full relative ${
                               category.color === 'purple' ? 'bg-gradient-to-r from-purple-500 to-purple-300' :
                               category.color === 'pink' ? 'bg-gradient-to-r from-pink-500 to-rose-300' :
