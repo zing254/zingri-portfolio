@@ -333,7 +333,7 @@ export default function Contact() {
        }
      }
    `}</style>
-       <section id="contact" ref={ref} className="relative py-32 overflow-hidden">
+       <section id="contact" ref={ref} aria-labelledby="contact-heading" className="relative py-32 overflow-hidden">
        {/* Background */}
        <div className="absolute inset-0 grid-bg" />
        <div className="absolute top-1/4 left-0 w-[600px] h-[600px] rounded-full blur-[180px] bg-accent/5" />
@@ -351,7 +351,7 @@ export default function Contact() {
            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-accent/30 mb-6">
              <span className="text-xs font-mono text-accent/80">ping contact.sh</span>
            </div>
-            <h2 className="font-heading text-[var(--font-size-heading)] font-bold mb-4">
+             <h2 id="contact-heading" className="font-heading text-[var(--font-size-heading)] font-bold mb-4">
               <span className="text-white">Get In </span>
               <span className="glow-text-accent text-transparent bg-clip-text bg-gradient-to-r from-accent to-primary">
                 Touch

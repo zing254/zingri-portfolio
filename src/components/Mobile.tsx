@@ -109,7 +109,7 @@ export default function Mobile() {
   }
 
   return (
-    <section id="mobile" ref={ref} className="relative py-32 overflow-hidden">
+    <section id="mobile" ref={ref} aria-labelledby="mobile-heading" className="relative py-32 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 grid-bg" />
       <div className="absolute top-20 left-0 w-[500px] h-[500px] rounded-full blur-[180px] bg-secondary/5" />
@@ -127,7 +127,7 @@ export default function Mobile() {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-primary/30 mb-6">
             <span className="text-xs font-mono text-primary/80">npm list mobile --depth=0</span>
           </div>
-          <h2 className="font-heading text-5xl md:text-6xl font-bold mb-4">
+          <h2 id="mobile-heading" className="font-heading text-5xl md:text-6xl font-bold mb-4">
             <span className="text-white">Mobile </span>
             <span className="glow-text-primary text-transparent bg-clip-text bg-gradient-to-r from-primary via-white to-secondary">
               Engineering

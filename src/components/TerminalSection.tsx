@@ -6,7 +6,7 @@ import { Terminal as TerminalIcon } from 'lucide-react';
 
 export default function TerminalSection() {
   return (
-    <section className="relative py-32 px-4 overflow-hidden">
+    <section id="terminal" aria-labelledby="terminal-heading" className="relative py-32 px-4 overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px]" />
       
@@ -21,7 +21,7 @@ export default function TerminalSection() {
             <TerminalIcon className="w-4 h-4 text-secondary" />
             <span className="text-xs font-mono text-secondary/80">system_access_v2.bin</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 font-heading">
+          <h2 id="terminal-heading" className="text-4xl md:text-5xl font-bold mb-4 font-heading">
             Interactive <span className="text-primary">Sandbox</span>
           </h2>
           <p className="text-muted max-w-2xl mx-auto">

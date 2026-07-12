@@ -223,7 +223,7 @@ const stats = [
 ];
 
   return (
-    <section id="education" ref={ref} className="relative py-32 overflow-hidden">
+    <section id="education" ref={ref} aria-labelledby="education-heading" className="relative py-32 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 grid-bg" />
       <div className="absolute top-0 right-1/4 w-[600px] h-[600px] rounded-full blur-[180px] bg-secondary/5" />
@@ -241,7 +241,7 @@ const stats = [
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-secondary/30 mb-6">
             <span className="text-xs font-mono text-secondary/80">cat education.json</span>
           </div>
-          <h2 className="font-heading text-5xl md:text-6xl font-bold mb-4">
+          <h2 id="education-heading" className="font-heading text-5xl md:text-6xl font-bold mb-4">
             <span className="text-white">Cybersecurity </span>
             <span className="glow-text-primary text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
               Certifications

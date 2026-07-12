@@ -38,7 +38,7 @@ export default function Hero() {
   const titles = ["Senior Full-Stack Lead", "DevOps Architect", "Security Specialist"];
 
   return (
-    <section ref={ref} className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section id="hero" ref={ref} aria-labelledby="hero-heading" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Animated grid background */}
       <div className="absolute inset-0 grid-bg opacity-100" />
       
@@ -94,7 +94,7 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="mb-6"
         >
-          <h1 className="font-heading text-6xl md:text-8xl lg:text-9xl font-black tracking-tight">
+          <h1 id="hero-heading" className="font-heading text-6xl md:text-8xl lg:text-9xl font-black tracking-tight">
             <span className="glow-text-primary text-transparent bg-clip-text bg-gradient-to-r from-primary via-white to-secondary">
               {typedText}
             </span>

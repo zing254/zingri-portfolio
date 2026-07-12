@@ -37,7 +37,7 @@ export default function Testimonials() {
   const prev = () => setCurrent((c) => (c - 1 + testimonials.length) % testimonials.length);
 
   return (
-    <section id="testimonials" ref={ref} className="relative py-32 overflow-hidden">
+    <section id="testimonials" ref={ref} aria-labelledby="testimonials-heading" className="relative py-32 overflow-hidden">
       <div className="absolute inset-0 grid-bg" />
       <div className="absolute bottom-1/4 right-0 w-[500px] h-[500px] rounded-full blur-[180px] bg-accent/5" />
 
@@ -52,7 +52,7 @@ export default function Testimonials() {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-accent/30 mb-6">
             <span className="text-xs font-mono text-accent/80">cat testimonials.sh</span>
           </div>
-          <h2 className="font-heading text-5xl md:text-6xl font-bold mb-4">
+          <h2 id="testimonials-heading" className="font-heading text-5xl md:text-6xl font-bold mb-4">
             <span className="text-white">What </span>
             <span className="glow-text-accent text-transparent bg-clip-text bg-gradient-to-r from-accent to-primary">
               People Say

@@ -191,7 +191,7 @@ export default function Architecture() {
   const pattern = patterns[activePattern];
 
   return (
-    <section id="architecture" ref={ref} className="relative py-32 overflow-hidden">
+    <section id="architecture" ref={ref} aria-labelledby="architecture-heading" className="relative py-32 overflow-hidden">
       <div className="absolute inset-0 grid-bg" />
       <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full blur-[180px] bg-secondary/5" />
 
@@ -206,7 +206,7 @@ export default function Architecture() {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-primary/30 mb-6">
             <span className="text-xs font-mono text-primary/80">cat architecture.sh</span>
           </div>
-          <h2 className="font-heading text-5xl md:text-6xl font-bold mb-4">
+          <h2 id="architecture-heading" className="font-heading text-5xl md:text-6xl font-bold mb-4">
             <span className="text-white">System </span>
             <span className="glow-text-primary text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
               Architecture
