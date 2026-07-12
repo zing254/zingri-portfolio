@@ -64,47 +64,51 @@ export async function POST(request: Request) {
     });
 
     if (resend) {
-      await resend.emails.send({
-        from: 'Portfolio Contact <onboarding@resend.dev>',
-        to: process.env.CONTACT_EMAIL || 'zingri@fleektech.co.ke',
-        subject: `Portfolio: ${subject}`,
-        html: `
-          <div style="font-family: monospace; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #00ffff;">New Contact from Portfolio</h2>
-            <div style="background: #111; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              <p><strong style="color: #39ff14;">Name:</strong> ${name}</p>
-              <p><strong style="color: #39ff14;">Email:</strong> <a href="mailto:${email}">${email}</a></p>
-              <p><strong style="color: #39ff14;">Subject:</strong> ${subject}</p>
+      try {
+        await resend.emails.send({
+          from: 'Portfolio Contact <onboarding@resend.dev>',
+          to: process.env.CONTACT_EMAIL || 'zingri@fleektech.co.ke',
+          subject: `Portfolio: ${sanitize(subject)}`,
+          html: `
+            <div style="font-family: monospace; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #00ffff;">New Contact from Portfolio</h2>
+              <div style="background: #111; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <p><strong style="color: #39ff14;">Name:</strong> ${sanitize(name)}</p>
+                <p><strong style="color: #39ff14;">Email:</strong> <a href="mailto:${sanitize(email)}">${sanitize(email)}</a></p>
+                <p><strong style="color: #39ff14;">Subject:</strong> ${sanitize(subject)}</p>
+              </div>
+              <div style="background: #1a1a1a; padding: 20px; border-radius: 8px; border-left: 4px solid #a855f7;">
+                <p><strong style="color: #a855f7;">Message:</strong></p>
+                <p style="white-space: pre-wrap; color: #888;">${sanitize(message)}</p>
+              </div>
             </div>
-            <div style="background: #1a1a1a; padding: 20px; border-radius: 8px; border-left: 4px solid #a855f7;">
-              <p><strong style="color: #a855f7;">Message:</strong></p>
-              <p style="white-space: pre-wrap; color: #888;">${message}</p>
-            </div>
-          </div>
-        `,
-      });
+          `,
+        });
 
-      await resend.emails.send({
-        from: 'Zingri Master <onboarding@resend.dev>',
-        to: email,
-        subject: 'Thanks for reaching out!',
-        html: `
-          <div style="font-family: monospace; max-width: 600px; margin: 0 auto;">
-            <div style="text-align: center; padding: 20px 0;">
-              <h1 style="color: #00ffff; font-size: 28px;">BAZENGA SYSTEMS</h1>
-              <p style="color: #39ff14;">MESSAGE RECEIVED</p>
+        await resend.emails.send({
+          from: 'Zingri Master <onboarding@resend.dev>',
+          to: email,
+          subject: 'Thanks for reaching out!',
+          html: `
+            <div style="font-family: monospace; max-width: 600px; margin: 0 auto;">
+              <div style="text-align: center; padding: 20px 0;">
+                <h1 style="color: #00ffff; font-size: 28px;">BAZENGA SYSTEMS</h1>
+                <p style="color: #39ff14;">MESSAGE RECEIVED</p>
+              </div>
+              <div style="background: #111; padding: 20px; border-radius: 8px;">
+                <p>Hi ${sanitize(name)},</p>
+                <p>Thanks for reaching out! I've received your message and will get back to you within 24 hours.</p>
+                <p style="margin-top: 20px;">Best regards,<br><strong>Zingri Master</strong><br>CTO & Senior Full-Stack Lead</p>
+              </div>
             </div>
-            <div style="background: #111; padding: 20px; border-radius: 8px;">
-              <p>Hi ${name},</p>
-              <p>Thanks for reaching out! I've received your message and will get back to you within 24 hours.</p>
-              <p style="margin-top: 20px;">Best regards,<br><strong>Zingri Master</strong><br>CTO & Senior Full-Stack Lead</p>
-            </div>
-          </div>
-        `,
-      });
+          `,
+        });
+      } catch (emailError) {
+        console.error('Failed to send contact emails:', emailError);
+      }
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, message: 'Message saved successfully' });
   } catch (error) {
     console.error('Contact API error:', error);
     return NextResponse.json(
