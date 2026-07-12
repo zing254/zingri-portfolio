@@ -120,7 +120,45 @@ export default function Projects() {
     visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5 } }
   };
 
-  if (loading) return <div className="flex h-[600px] items-center justify-center">Loading...</div>;
+  if (loading) return (
+    <div className="relative py-32">
+      <div className="absolute inset-0 grid-bg" />
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <div className="h-10 w-48 mx-auto rounded bg-white/5 animate-pulse" />
+          <div className="h-6 w-64 mx-auto mt-4 rounded bg-white/5 animate-pulse" />
+        </div>
+        <div className="mb-12 flex justify-center gap-4">
+          {[1,2,3,4,5].map((i) => (
+            <div key={i} className="h-8 w-20 rounded-full bg-white/5 animate-pulse" />
+          ))}
+        </div>
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="rounded-2xl glass border border-primary/20 p-6 animate-pulse">
+              <div className="mb-4">
+                <div className="h-6 w-3/4 rounded bg-white/10 mb-2" />
+                <div className="h-4 w-1/3 rounded bg-white/5 mb-3" />
+                <div className="space-y-2">
+                  <div className="h-3 w-full rounded bg-white/5" />
+                  <div className="h-3 w-5/6 rounded bg-white/5" />
+                </div>
+              </div>
+              <div className="mb-4 flex gap-2">
+                <div className="h-6 w-16 rounded bg-primary/10" />
+                <div className="h-6 w-20 rounded bg-primary/10" />
+                <div className="h-6 w-14 rounded bg-primary/10" />
+              </div>
+              <div className="pt-4 border-t border-white/5 flex items-center gap-4">
+                <div className="h-4 w-20 rounded bg-white/5" />
+                <div className="h-4 w-16 rounded bg-white/5" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
   if (error) return <div className="flex h-[600px] items-center justify-center">Error: {error}</div>;
 
   const filteredProjects = activeFilter === "All" 
