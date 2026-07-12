@@ -97,8 +97,23 @@ export interface GitHubRepo {
   updated_at: string; // ISO date string
 }
 
+// ==========================================
+// 🐙 GITHUB REPO CACHING
+// ==========================================
+
+const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes
+let cachedRepos: GitHubRepo[] | null = null;
+let cacheTimestamp = 0;
+
 // Helper function to fetch GitHub repositories
 export const fetchGitHubRepos = async (): Promise<GitHubRepo[]> => {
+  const now = Date.now();
+
+  // Return cached data if still valid
+  if (cachedRepos && (now - cacheTimestamp) < CACHE_DURATION_MS) {
+    return cachedRepos;
+  }
+
   try {
     const token = githubConfig.token;
     const headers: HeadersInit = {
@@ -111,7 +126,10 @@ export const fetchGitHubRepos = async (): Promise<GitHubRepo[]> => {
 
     const response = await fetch(
       `https://api.github.com/users/${githubConfig.username}/repos?sort=updated&per_page=100`,
-      { headers }
+      {
+        headers,
+        next: { revalidate: 300 },
+      }
     );
 
     if (!response.ok) {
@@ -119,10 +137,17 @@ export const fetchGitHubRepos = async (): Promise<GitHubRepo[]> => {
     }
 
     const repos: GitHubRepo[] = await response.json();
-    return repos.filter(repo => !repo.fork); // Filter out forks
+    const filtered = repos.filter(repo => !repo.fork);
+
+    // Update cache
+    cachedRepos = filtered;
+    cacheTimestamp = now;
+
+    return filtered;
   } catch (error) {
     console.error('Error fetching GitHub repositories:', error);
-    return []; // Return empty array on error
+    // Return stale cache if available, otherwise empty array
+    return cachedRepos ?? [];
   }
 };
 
