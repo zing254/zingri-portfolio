@@ -128,7 +128,7 @@ export default function Projects() {
     : projectsData.filter(project => project.category === activeFilter);
 
   return (
-    <section id="projects" ref={ref} className="relative py-32 overflow-hidden">
+    <section id="projects" ref={ref} aria-labelledby="projects-heading" className="relative py-32 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 grid-bg" />
       <div className="absolute top-20 left-0 w-[500px] h-[500px] rounded-full blur-[180px] bg-secondary/5" />
@@ -143,7 +143,7 @@ export default function Projects() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold text-white mb-4">
+          <h2 id="projects-heading" className="text-4xl font-bold text-white mb-4">
             Projects
           </h2>
           <p className="text-xl text-muted max-w-2xl mx-auto">
@@ -286,7 +286,7 @@ export default function Projects() {
                             href={project.github}
                             target="_blank"
                             rel="noopener noreferrer"
-                            aria-label={`GitHub repository for ${project.name} (opens in new tab)`}
+                            aria-label={`View ${project.name} on GitHub (opens in new tab)`}
                             className="flex items-center gap-2 text-sm font-mono text-muted hover:text-white transition-colors"
                           >
                             <Github className="w-4 h-4" />
@@ -404,7 +404,7 @@ export default function Projects() {
                         href={modalProject.github}
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label={`GitHub repository for ${modalProject.name} (opens in new tab)`}
+                        aria-label={`View ${modalProject.name} on GitHub (opens in new tab)`}
                         className="flex items-center gap-2 text-sm font-mono text-muted hover:text-white transition-colors"
                       >
                         <Github className="w-4 h-4" />
