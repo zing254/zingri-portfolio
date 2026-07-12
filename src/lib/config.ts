@@ -1,4 +1,4 @@
-// ⚙️ BAZENGA CONFIGURATION
+// ⚙️ ZINGRI MASTER CONFIGURATION
 // ZINGRI'S DIGITAL NEXUS - Type-safe configuration system
 
 export interface SocialLink {
@@ -262,12 +262,12 @@ export const socialLinks: SocialLink[] = [
   },
   {
     name: 'LinkedIn',
-    url: '',
+    url: 'https://linkedin.com/in/zingri',
     icon: 'Linkedin',
   },
   {
     name: 'Twitter',
-    url: '',
+    url: 'https://twitter.com/zingri',
     icon: 'Twitter',
   },
   {
@@ -508,7 +508,7 @@ export const education: Education[] = [
 // ==========================================
 
 export const siteConfig = {
-  name: 'BAZENGA',
+  name: 'Zingri Master',
   title: 'ZINGRI MASTER | Full-Stack Developer & Cybersecurity Expert',
   description: 'Portfolio of ZINGRI MASTER — Full-Stack Developer, DevOps Engineer, and Cybersecurity Expert with OSCP & CISSP certifications based in Nairobi, Kenya.',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://zingri.dev',
