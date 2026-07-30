@@ -619,21 +619,4 @@ export const navItems = [
   { label: 'Contact', href: '/#contact', icon: 'Mail' },
 ];
 
-// ==========================================
-// ✨ DEFAULT EXPORT
-// ==========================================
 
-const config = {
-  personalInfo,
-  socialLinks,
-  skillCategories,
-  projects,
-  experiences,
-  education,
-  themeColors,
-  siteConfig,
-  navItems,
-  allSkills,
-};
-
-export default config;

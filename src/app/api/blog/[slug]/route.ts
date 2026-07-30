@@ -20,6 +20,7 @@ export async function PUT(request: Request, { params }: { params: { slug: string
     if (!post) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     return NextResponse.json({ success: true, post });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('Error updating blog post:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -1,4 +1,10 @@
 import { NextResponse } from 'next/server';
+import crypto from 'crypto';
+
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
+}
 
 export async function POST(request: Request) {
   try {
@@ -7,12 +13,12 @@ export async function POST(request: Request) {
 
     if (!adminSecret) {
       return NextResponse.json(
-        { error: 'Admin secret not configured on server' },
+        { error: 'Authentication unavailable' },
         { status: 500 }
       );
     }
 
-    if (secret === adminSecret) {
+    if (typeof secret === 'string' && timingSafeEqual(secret, adminSecret)) {
       return NextResponse.json({ success: true });
     }
 

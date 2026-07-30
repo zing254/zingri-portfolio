@@ -1,4 +1,10 @@
 import { NextResponse } from 'next/server';
+import crypto from 'crypto';
+
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
+}
 
 export function verifyAuth(request: Request): boolean {
   const adminSecret = process.env.ADMIN_SECRET;
@@ -8,8 +14,8 @@ export function verifyAuth(request: Request): boolean {
     return false;
   }
 
-  const providedSecret = request.headers.get('x-admin-secret');
-  return providedSecret === adminSecret;
+  const providedSecret = request.headers.get('x-admin-secret') || '';
+  return timingSafeEqual(providedSecret, adminSecret);
 }
 
 export function requireAuth(request: Request): NextResponse | null {

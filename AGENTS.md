@@ -1,34 +1,57 @@
 # AGENTS.md — Zingri Portfolio
 
-Next.js portfolio site (App Router). Production deploy: `https://zingri-portfolio-main.vercel.app`.
-Actual stack: **Next.js 14.2, React 18, TypeScript, TailwindCSS 3.4, Framer Motion, Mongoose, Resend, Vitest**.
-The README is partly stale — it claims Next.js 15 / React 19. Trust `package.json` and `next.config.js`.
+Next.js 14.2 App Router portfolio site. Deployed at `https://zingri-portfolio-main.vercel.app`.
+**Stack**: Next.js 14.2, React 18, TypeScript, TailwindCSS 3.4, Framer Motion 12, Mongoose 9, Resend 3, Vitest 4.
+The README claims Next.js 15 / React 19 — it is stale. Trust `package.json`.
 
 ## Commands
 
-- `npm run dev` — local dev server
-- `npm run build` — production build (`next build`); also runs lint + type-check
-- `npm run lint` — `next lint` (uses `next/core-web-vitals`)
-- `npm test` — runs **Vitest** (`vitest run`, once). Watch mode: `npm run test:watch`
-- Single test file: `npx vitest run src/test/auth.test.ts`
+- `npm run dev` — dev server
+- `npm run build` — `next build` (type-checks but **does not lint**)
+- `npm run lint` — `next lint` (`next/core-web-vitals`)
+- `npm test` — `vitest run` (single run)
+- `npm run test:watch` — `vitest` (watch mode)
+- Single test: `npx vitest run src/test/auth.test.ts`
 
 ## Critical gotchas
 
-- **Tailwind colors are custom, not defaults.** Palette in `tailwind.config.ts`: `primary #00d4ff`, `secondary #a855f7`, `accent #39ff14`, `warning #ff6b35`, `background #0a0a0f`, `surface #12121a`, `muted #64748b`. Do not add standard Tailwind color names (e.g. `blue-500`) where the neon palette is intended.
-- **Never build class names dynamically** (e.g. `bg-${color}`) — Tailwind's content scan only keeps full literal strings, so dynamic classes get purged and silently produce no CSS. Use `src/lib/tailwind-helpers.ts` (`colorMap` / `getColorClasses`) which maps a color name to pre-written static class strings. Add new color variants there, not inline.
-- **`next/font` fetches Google Fonts (Space Grotesk, Inter, JetBrains Mono, Orbitron) at build time.** In networks that block `fonts.gstatic.com` the build fails on font fetch. This is an environment limitation, not a code bug — it builds fine on Vercel.
-- **Auth is deny-by-default.** `src/lib/auth.ts` `verifyAuth()` returns `false` when `ADMIN_SECRET` is unset. Admin routes (`/admin`) are unreachable until that env var exists.
+- **Tailwind colors are custom.** Palette in `tailwind.config.ts`: `primary #00d4ff`, `secondary #a855f7`, `accent #39ff14`, `warning #ff6b35`, `background #0a0a0f`, `surface #12121a`, `muted #64748b`. Do NOT use standard Tailwind color names (e.g. `blue-500`) where neon palette is intended.
+- **Never build class names dynamically** (e.g. `bg-${color}`) — Tailwind's content scan requires full literal strings. Use `src/lib/tailwind-helpers.ts` (`colorMap` / `getColorClasses`) which maps color names to static class strings. Add new color variants there.
+- **`src/lib/blog.ts` uses `fs.readFileSync`/`fs.readdirSync`** — this WILL fail on Vercel serverless (no filesystem access outside build output). Blog content must come from MongoDB. Only use this module during local dev; any PR touching blog display should verify it works without filesystem access.
+- **Rate limiter is in-memory only** (`src/lib/rate-limit.ts` uses a local `Map`). Each Vercel cold start gets a fresh empty map, so rate limiting is effectively absent in production. API routes call `rateLimit()` as a no-op.
+- **Admin auth stores the raw secret in `sessionStorage`** (`src/app/admin/login/page.tsx:26`). The secret is sent as the `x-admin-secret` header on every request. This is not a real session — any XSS yields full admin access. `verifyAuth()` in `src/lib/auth.ts` uses plain string comparison (no timing-safe compare, no hashing).
+- **`src/components/ThemeToggle.tsx` has duplicate `"use client"`** on lines 1 and 3. The second one causes a build error. If editing this file, remove the extra directive.
+- **`next/font` fetches Google Fonts (Space Grotesk, Inter, JetBrains Mono, Orbitron) at build time.** In networks that block `fonts.gstatic.com` the build fails — this is an environment limitation, not a bug. It builds fine on Vercel.
+- **Auth is deny-by-default** — `verifyAuth()` returns `false` when `ADMIN_SECRET` is unset. Admin routes are unreachable without that env var.
+- **No `loading.tsx` or `error.tsx`** — pages load synchronously and there is no error boundary. Any render error crashes the entire layout.
 
 ## Structure
 
-- `src/lib/config.ts` — single source of truth for all site content: `siteConfig` (name "Zingri Master"), `socialLinks`, `skillCategories`, `projects`, `experiences`, `educations`, `navItems`. Edit content here, not in components.
+- `src/lib/config.ts` — single source of truth for all site content: `siteConfig`, `socialLinks`, `skillCategories`, `projects`, `experiences`, `educations`, `navItems`. Also exports `personalInfo` and `config` as default (the default export is unused — use named imports). Edit content here, not in components.
 - `src/lib/models/` — Mongoose models (`ContactMessage`, `BlogPost`). Require `MONGODB_URI` at runtime.
-- `src/app/api/*` — route handlers: `contact`, `messages`, `blog`, `content`, `auth/verify`. All need env vars (`MONGODB_URI`, `RESEND_API_KEY`, `CONTACT_EMAIL`).
-- `src/components/` — UI sections; each top-level section has `aria-labelledby` and the Projects modal is a `role="dialog"`.
+- `src/app/api/*` — route handlers: `contact`, `messages`, `blog`, `content`, `auth/verify`. All need env vars.
+- `src/components/` — UI sections with `aria-labelledby` on each top-level section; Projects modal has `role="dialog"`.
 - `src/test/` — Vitest specs (`auth`, `config`, `contact`, `tailwind-helpers`). Setup file `src/test/setup.ts` imports `@testing-library/jest-dom`.
+- `src/middleware.ts` — applies CSP + security headers (HSTS, X-Frame-Options, etc.) to all pages except static assets.
 
-## Environment / deploy
+## Environment
 
-- Required env vars (see `.env.example`): `MONGODB_URI`, `ADMIN_SECRET`, `RESEND_API_KEY`, `CONTACT_EMAIL`, `NEXT_PUBLIC_SITE_URL`. `NEXT_PUBLIC_GA_ID` is optional.
-- Deploy: `vercel --prod` (already configured via `vercel.json`, which adds security headers + immutable caching for `/_next/static`). CSP in `src/middleware.ts` permits `connect-src` to `api.github.com` and `vercel.live` only — adding other external API calls requires updating the CSP.
-- `public/resume.pdf` is served by the Hero "Download Resume" button — keep that file present.
+Actual env vars used by the code (`.env.example` is stale — it describes EmailJS but the code uses Resend):
+
+| Variable | Used in | Notes |
+|---|---|---|
+| `MONGODB_URI` | `src/lib/mongodb.ts` | Required for DB features |
+| `ADMIN_SECRET` | `src/lib/auth.ts`, `src/app/api/auth/verify/route.ts` | Required for admin routes |
+| `RESEND_API_KEY` | `src/app/api/contact/route.ts` | Required for contact form email |
+| `CONTACT_EMAIL` | `src/app/api/contact/route.ts` | Fallback `zingri@fleektech.co.ke` if unset |
+| `NEXT_PUBLIC_SITE_URL` | `src/lib/config.ts` | Fallback `https://zingri.dev` if unset |
+| `NEXT_PUBLIC_GA_ID` | `src/lib/config.ts` | Optional |
+| `GITHUB_TOKEN` | `src/lib/config.ts` | For API calls in config |
+
+Deploy: `vercel --prod` (configured via `vercel.json` — adds security headers + immutable caching for `/_next/static`).
+CSP in `src/middleware.ts` only permits `connect-src` to `api.github.com` and `vercel.live` — adding external API calls requires updating CSP.
+
+## Test quirks
+
+- Auth tests mutate `process.env.ADMIN_SECRET` directly — `vitest` runs tests in parallel by default, which may cause cross-test contamination for these env-dependent tests.
+- `src/test/contact.test.tsx` defines a standalone `validateField()` function that duplicates but does NOT test the actual `react-hook-form` logic in the contact component. Changes to form validation must update both.

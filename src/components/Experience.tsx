@@ -2,9 +2,9 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { 
-  Briefcase, Calendar, MapPin, Terminal, 
-  ChevronRight, Sparkles, Building2, Cpu, Shield 
+import {
+  Briefcase, Calendar, MapPin, Terminal,
+  ChevronRight, Sparkles, Building2, Cpu, Shield
 } from "lucide-react";
 
 const experiences = [

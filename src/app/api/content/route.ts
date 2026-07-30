@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { SiteContent } from '@/lib/models/SiteContent';
 import { requireAuth } from '@/lib/auth';
-import config from '@/lib/config';
+import { personalInfo, skillCategories, projects, experiences, education, socialLinks } from '@/lib/config';
 
 export async function GET() {
   try {
@@ -12,12 +12,12 @@ export async function GET() {
 
     if (sections.length === 0) {
       const defaults = [
-        { key: 'personal', data: config.personalInfo as unknown as Record<string, unknown> },
-        { key: 'skills', data: config.skillCategories as unknown as Record<string, unknown> },
-        { key: 'projects', data: config.projects as unknown as Record<string, unknown> },
-        { key: 'experience', data: config.experiences as unknown as Record<string, unknown> },
-        { key: 'education', data: config.education as unknown as Record<string, unknown> },
-        { key: 'social', data: config.socialLinks as unknown as Record<string, unknown> },
+        { key: 'personal', data: personalInfo as unknown as Record<string, unknown> },
+        { key: 'skills', data: skillCategories as unknown as Record<string, unknown> },
+        { key: 'projects', data: projects as unknown as Record<string, unknown> },
+        { key: 'experience', data: experiences as unknown as Record<string, unknown> },
+        { key: 'education', data: education as unknown as Record<string, unknown> },
+        { key: 'social', data: socialLinks as unknown as Record<string, unknown> },
       ];
       return NextResponse.json({ sections: defaults });
     }
