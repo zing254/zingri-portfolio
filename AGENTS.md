@@ -7,7 +7,7 @@ The README claims Next.js 15 / React 19 — it is stale. Trust `package.json`.
 ## Commands
 
 - `npm run dev` — dev server
-- `npm run build` — `next build` (type-checks but **does not lint**)
+- `npm run build` — `next build` (runs type-check + **non-blocking** ESLint warnings only)
 - `npm run lint` — `next lint` (`next/core-web-vitals`)
 - `npm test` — `vitest run` (single run)
 - `npm run test:watch` — `vitest` (watch mode)
@@ -19,15 +19,14 @@ The README claims Next.js 15 / React 19 — it is stale. Trust `package.json`.
 - **Never build class names dynamically** (e.g. `bg-${color}`) — Tailwind's content scan requires full literal strings. Use `src/lib/tailwind-helpers.ts` (`colorMap` / `getColorClasses`) which maps color names to static class strings. Add new color variants there.
 - **`src/lib/blog.ts` uses `fs.readFileSync`/`fs.readdirSync`** — this WILL fail on Vercel serverless (no filesystem access outside build output). Blog content must come from MongoDB. Only use this module during local dev; any PR touching blog display should verify it works without filesystem access.
 - **Rate limiter is in-memory only** (`src/lib/rate-limit.ts` uses a local `Map`). Each Vercel cold start gets a fresh empty map, so rate limiting is effectively absent in production. API routes call `rateLimit()` as a no-op.
-- **Admin auth stores the raw secret in `sessionStorage`** (`src/app/admin/login/page.tsx:26`). The secret is sent as the `x-admin-secret` header on every request. This is not a real session — any XSS yields full admin access. `verifyAuth()` in `src/lib/auth.ts` uses plain string comparison (no timing-safe compare, no hashing).
-- **`src/components/ThemeToggle.tsx` has duplicate `"use client"`** on lines 1 and 3. The second one causes a build error. If editing this file, remove the extra directive.
+- **Admin auth stores the raw secret in `sessionStorage`** (`src/app/admin/login/page.tsx:26`). The secret is sent as the `x-admin-secret` header on every request. This is not a real session — any XSS yields full admin access. `verifyAuth()` in `src/lib/auth.ts` now uses `crypto.timingSafeEqual` (added Jul 2026), but the overall scheme is still vulnerable-by-design.
 - **`next/font` fetches Google Fonts (Space Grotesk, Inter, JetBrains Mono, Orbitron) at build time.** In networks that block `fonts.gstatic.com` the build fails — this is an environment limitation, not a bug. It builds fine on Vercel.
 - **Auth is deny-by-default** — `verifyAuth()` returns `false` when `ADMIN_SECRET` is unset. Admin routes are unreachable without that env var.
 - **No `loading.tsx` or `error.tsx`** — pages load synchronously and there is no error boundary. Any render error crashes the entire layout.
 
 ## Structure
 
-- `src/lib/config.ts` — single source of truth for all site content: `siteConfig`, `socialLinks`, `skillCategories`, `projects`, `experiences`, `educations`, `navItems`. Also exports `personalInfo` and `config` as default (the default export is unused — use named imports). Edit content here, not in components.
+- `src/lib/config.ts` — single source of truth for all site content: `siteConfig`, `socialLinks`, `skillCategories`, `projects`, `experiences`, `educations`, `navItems`. Also exports `personalInfo` and `config` as default (**default export was removed Jul 2026** — use named imports only). Edit content here, not in components.
 - `src/lib/models/` — Mongoose models (`ContactMessage`, `BlogPost`). Require `MONGODB_URI` at runtime.
 - `src/app/api/*` — route handlers: `contact`, `messages`, `blog`, `content`, `auth/verify`. All need env vars.
 - `src/components/` — UI sections with `aria-labelledby` on each top-level section; Projects modal has `role="dialog"`.
